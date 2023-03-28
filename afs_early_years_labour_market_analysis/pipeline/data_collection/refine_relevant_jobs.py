@@ -69,7 +69,8 @@ class RefineRelevantJobs(FlowSpec):
         print(self.relevant_job_adverts.shape)
         # save to s3
         self.relevant_job_adverts.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_job_adverts.parquet"
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_job_adverts.parquet",
+            index=False
         )
         self.next(self.end)
 
