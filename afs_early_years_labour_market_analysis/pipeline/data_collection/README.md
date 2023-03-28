@@ -13,3 +13,7 @@ The data used in the analysis is sourced from the following sources:
     ```bash
     python refine_relevant_jobs.py run
     ```
+2. `refine_relevant_jobs.py` - adds location and salary to job adverts. Also adds a dataset of skills extracted from the relevant job adverts. To run, execute the following command from this directory:
+    ```bash
+    python refine_relevant_jobs.py run
+    ```
