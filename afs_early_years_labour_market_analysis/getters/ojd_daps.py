@@ -17,3 +17,12 @@ def get_job_adverts() -> pd.DataFrame:
         "inputs/ojd_daps_extract/adverts_ojd_daps_extract.parquet",
         download_as="dataframe",
     )
+
+def get_relevant_job_adverts() -> pd.DataFrame:
+    """Returns dataframe of relevant job adverts
+    """
+    return download_obj(
+        BUCKET_NAME,
+        "inputs/ojd_daps_extract/relevant_job_adverts.parquet",
+        download_as="dataframe",
+    )
