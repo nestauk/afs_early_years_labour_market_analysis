@@ -1,9 +1,6 @@
 """
 Getters for OJD DAPS data
 """
-
-import pandas as pd
-
 import pandas as pd
 from nesta_ds_utils.loading_saving.S3 import download_obj
 from typing import Mapping, Union, Dict, List
