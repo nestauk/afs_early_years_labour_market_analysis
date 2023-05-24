@@ -115,6 +115,22 @@ staff_turnover_rate = load_s3_data(
     BUCKET_NAME, "inputs/ceyps/sceyp22_staff_turnover_rev.csv"
 )
 
+# children currently using free childcare (15-hours)
+
+b_eyp_percent_registered = (
+    load_s3_data(
+        BUCKET_NAME,
+        "inputs/education_provision/1b_early_years_provision_percentage_registered_2018_2022_corrected.csv",
+    )
+    .dropna(
+        subset=["region_code", "region_name", "old_la_code", "new_la_code", "la_name"],
+        how="all",
+    )
+    .reset_index(drop=True)
+)
+
+# average childcare setting size by provider type
+
 if __name__ == "__main__":
     # Clean up and merge LA-level data (census information, # of early year practitioner places, LA metadata)
     logger.info("cleaning and merging LA-level data...")
@@ -237,8 +253,14 @@ if __name__ == "__main__":
     )
     la_data["childminder_child_ratio"] = 1 / 6
 
-    # add turnover rates of staff by provider
+    # add uniform turnover rates of staff by provider
     la_data["avg_staff_turnover_rate"] = 0.095
+
+    # add uniform # of children per setting type as of 2021 - from Childcare and early years providers survey: 2021
+    la_data["average_num_registered_places_private_groupbased"] = 53
+    la_data["average_num_registered_places_voluntary_groupbased"] = 37
+    la_data["average_num_registered_places_all_groupbased"] = 47
+    la_data["average_num_registered_places_all_childminders"] = 6
 
     logger.info("add region-level information...")
 
@@ -295,4 +317,12 @@ if __name__ == "__main__":
         BUCKET_NAME,
         la_data_nurse_childminder,
         "outputs/curated_data/curated_la_data.csv",
+    )
+    logger.info(
+        "save cleaned regional- and LA- level 15-hour free childcare uptake data to s3..."
+    )
+    save_to_s3(
+        BUCKET_NAME,
+        b_eyp_percent_registered,
+        "outputs/curated_data/curated_free_childcare_uptake_data.csv",
     )
