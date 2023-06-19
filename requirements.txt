@@ -1,1 +1,5 @@
+nesta_ds_utils @ git+https://github.com/nestauk/nesta_ds_utils.git
+metaflow==2.7.14
+fsspec==2021.11.0
+s3fs==0.4.2
 openpyxl
