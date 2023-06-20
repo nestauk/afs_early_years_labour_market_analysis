@@ -1,0 +1,15 @@
+@import url("https://fonts.cdnfonts.com/css/century-gothic");
+html,
+body,
+[class*="css"] {
+  font-family: "Century Gothic";
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+}
+.title-font {
+  font-size: 48px !important;
+  font-weight: bold;
+  color: #0f294a;
+  vertical-align: middle;
+}
