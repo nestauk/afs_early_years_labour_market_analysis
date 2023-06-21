@@ -40,8 +40,6 @@ class EnrichRelevantJobs(FlowSpec):
         ).merge(
             self.locations, on="id", how="left")
         self.relevant_skills =self.relevant_job_adverts[["id"]].merge(self.skills, on="id", how="inner")
-        print(self.enriched_relevant_job_adverts.shape)
-        print(self.relevant_skills.shape)
         # save to s3
         self.enriched_relevant_job_adverts.to_parquet("s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts.parquet", index=False)
         self.relevant_skills.to_parquet("s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills.parquet", index=False)
