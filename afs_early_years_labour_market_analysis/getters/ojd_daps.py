@@ -23,3 +23,48 @@ def get_relevant_job_adverts() -> pd.DataFrame:
         "inputs/ojd_daps_extract/relevant_job_adverts.parquet",
         download_as="dataframe",
     )
+
+def get_salaries() -> pd.DataFrame:
+    """Returns dataframe of salaries
+    """
+    return download_obj(
+        BUCKET_NAME,
+        "inputs/ojd_daps_extract/salaries_ojd_daps_extract.parquet",
+        download_as="dataframe",
+    )
+
+def get_locations() -> pd.DataFrame:
+    """Returns dataframe of locations
+    """
+    return download_obj(
+        BUCKET_NAME,
+        "inputs/ojd_daps_extract/locations_ojd_daps_extract.parquet",
+        download_as="dataframe",
+    )
+
+def get_skills() -> pd.DataFrame:
+    """Returns dataframe of skills
+    """
+    return download_obj(
+        BUCKET_NAME,
+        "inputs/ojd_daps_extract/skills_ojd_daps_extract.parquet",
+        download_as="dataframe",
+    )
+
+def get_relevant_enriched_job_adverts() -> pd.DataFrame:
+    """Returns dataframe of relevant enriched job adverts
+    """
+    return download_obj(
+        BUCKET_NAME,
+        "inputs/ojd_daps_extract/enriched_relevant_job_adverts.parquet",
+        download_as="dataframe",
+    )
+
+def get_relevant_skills() -> pd.DataFrame:
+    """Returns dataframe of relevant skills
+    """
+    return download_obj(
+        BUCKET_NAME,
+        "inputs/ojd_daps_extract/relevant_skills.parquet",
+        download_as="dataframe",
+    )
