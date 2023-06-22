@@ -1,8 +1,3 @@
-import sys
-
-sys.path.append(
-    "/Users/india.kerlenesta/Projects/afs_early_years_labour_market_analysis"
-)
 """
 A flow to add relevant enrichment data to the relevant jobs dataset.
 
