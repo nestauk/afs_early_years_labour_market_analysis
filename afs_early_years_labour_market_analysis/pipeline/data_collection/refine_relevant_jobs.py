@@ -1,8 +1,3 @@
-import sys
-
-sys.path.append(
-    "/Users/india.kerlenesta/Projects/afs_early_years_labour_market_analysis"
-)
 """
 A flow to parse relevant Early Years jobs and shop assistant jobs from the OJO dataset.
 
