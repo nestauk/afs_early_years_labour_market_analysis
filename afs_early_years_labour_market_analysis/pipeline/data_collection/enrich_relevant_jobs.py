@@ -1,5 +1,5 @@
 """
-A flow to add relevant enrichment data to the relevant jobs dataset.
+A flow to add relevant enrichment data to the relevant jobs datasets (both EYP and similar job adverts).
 
 Adds:
 - Salary
@@ -13,7 +13,7 @@ from metaflow import FlowSpec, step, Parameter
 
 from afs_early_years_labour_market_analysis.getters.ojd_daps import (
     get_eyp_relevant_job_adverts,
-    get_shop_relevant_job_adverts,
+    get_similar_job_adverts,
     get_salaries,
     get_locations,
     get_skills,
@@ -31,12 +31,12 @@ class EnrichRelevantJobs(FlowSpec):
         """Get relevant job adverts from OJO dataset."""
         # get relevant job adverts
         self.relevant_job_adverts_eyp = get_eyp_relevant_job_adverts()
-        self.relevant_job_adverts_shop = get_shop_relevant_job_adverts()
+        self.relevant_job_adverts_sim_occ = get_similar_job_adverts()
         # convert id to int
         self.relevant_job_adverts_eyp["id"] = self.relevant_job_adverts_eyp[
             "id"
         ].astype(int)
-        self.relevant_job_adverts_shop["id"] = self.relevant_job_adverts_shop[
+        self.relevant_job_adverts_sim_occ["id"] = self.relevant_job_adverts_sim_occ[
             "id"
         ].astype(int)
         # get enrichement data
@@ -53,15 +53,17 @@ class EnrichRelevantJobs(FlowSpec):
             on="id",
             how="left",
         ).merge(self.locations, on="id", how="left")
-        self.shop_enriched_relevant_job_adverts = self.relevant_job_adverts_shop.merge(
-            self.salaries,
-            on="id",
-            how="left",
-        ).merge(self.locations, on="id", how="left")
+        self.sim_enriched_relevant_job_adverts = (
+            self.relevant_job_adverts_sim_occ.merge(
+                self.salaries,
+                on="id",
+                how="left",
+            ).merge(self.locations, on="id", how="left")
+        )
         self.eyp_relevant_skills = self.relevant_job_adverts_eyp[["id"]].merge(
             self.skills, on="id", how="inner"
         )
-        self.shop_relevant_skills = self.relevant_job_adverts_shop[["id"]].merge(
+        self.sim_relevant_skills = self.relevant_job_adverts_sim_occ[["id"]].merge(
             self.skills, on="id", how="inner"
         )
 
@@ -75,12 +77,12 @@ class EnrichRelevantJobs(FlowSpec):
             index=False,
         )
 
-        self.shop_enriched_relevant_job_adverts.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_shop.parquet",
+        self.sim_enriched_relevant_job_adverts.to_parquet(
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
             index=False,
         )
-        self.shop_relevant_skills.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_shop.parquet",
+        self.sim_relevant_skills.to_parquet(
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
             index=False,
         )
 
