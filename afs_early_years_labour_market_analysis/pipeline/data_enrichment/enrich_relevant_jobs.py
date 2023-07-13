@@ -1,9 +1,3 @@
-import sys
-
-sys.path.append(
-    "/Users/india.kerlenesta/Projects/afs_early_years_labour_market_analysis"
-)
-
 """
 A flow to add relevant enrichment data to the relevant jobs datasets (both EYP and similar job adverts).
 
@@ -143,7 +137,7 @@ class EnrichRelevantJobs(FlowSpec):
     def get_data(self):
         """Get relevant job adverts from OJO dataset."""
         # get relevant job adverts
-        self.relevant_job_adverts_eyp = get_eyp_relevant_job_adverts()[:10]
+        self.relevant_job_adverts_eyp = get_eyp_relevant_job_adverts()
         self.relevant_job_adverts_sim_occ = get_similar_job_adverts()
         # convert id to int
         self.relevant_job_adverts_eyp["id"] = self.relevant_job_adverts_eyp[
