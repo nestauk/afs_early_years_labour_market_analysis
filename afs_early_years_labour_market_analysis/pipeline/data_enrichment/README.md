@@ -11,7 +11,6 @@ We enrich OJO data by adding:
 - description text;
 - minimum early year practitioners qualification level;
 - location urban/rural classification;
-- location birth rates
 
 `enrich_relevant_jobs.py` - adds enrichment information. Also adds a dataset of skills extracted from the relevant job adverts. To run, execute the following command from this directory:
 
@@ -19,7 +18,30 @@ We enrich OJO data by adding:
 python enrich_relevant_jobs.py run
 ```
 
-## Qualifications codebook
+### Qualification level
+
+We take a pattern matching approach to extracting the **minimum** qualification mentioned for a given job advert. The steps are as follows:
+
+1. **Identify spans** that comply with a series of pattern based rules;
+2. **Convert qualifications** that are not numbered (i.e. degree levels) to numbers as described in `level_dict`
+3. **Extract numbers** from flagged, converted spans;
+4. **Pick the minimum** qualification level number.
+
+To evaluate this rules based approach, we label 100 randomly sampled (random_seed=42) EYP job adverts with qualifications extracted. The overall accuracy is **0.96**.
+
+|              | precision | recall   | f1-score | support |
+| ------------ | --------- | -------- | -------- | ------- |
+| level 0      | 1         | 0.85     | 0.918919 | 20      |
+| level 1      | 1         | 1        | 1        | 1       |
+| level 2      | 0.956522  | 0.956522 | 0.956522 | 23      |
+| level 3      | 0.955556  | 1        | 0.977273 | 43      |
+| level 4      | 0         | 0        | 0        | 0       |
+| level 6      | 1         | 1        | 1        | 13      |
+| accuracy     | 0.96      | 0.96     | 0.96     | 0.96    |
+| macro avg    | 0.81868   | 0.801087 | 0.808786 | 100     |
+| weighted avg | 0.970889  | 0.96     | 0.964011 | 100     |
+
+### Qualification level codebook
 
 According to [this guidance on qualifications from the UK government](https://www.gov.uk/government/publications/early-years-qualifications-achieved-in-england), the types of qualifications are as follows:
 
@@ -108,10 +130,3 @@ According to [this guidance on qualifications from the UK government](https://ww
 | 6                    | Qualified Teacher Status (QTS)                                                                                                                                                                                  |
 | 6                    | Early Years Teacher Status (EYTS)                                                                                                                                                                               |
 | 6                    | Early Years Professional Status (EYPS)                                                                                                                                                                          |
-
-We take a pattern matching approach to extracting the **minimum** qualification mentioned for a given job advert. The steps are as follows:
-
-1. **Identify spans** that comply with a series of pattern based rules;
-2. **Convert qualifications** that are not numbered (i.e. degree levels) to numbers as described in `level_dict`
-3. **Extract numbers** from flagged, converted spans;
-4. **Pick the minimum** qualification level number.
