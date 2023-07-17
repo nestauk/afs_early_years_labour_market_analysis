@@ -18,6 +18,8 @@ We enrich OJO data by adding:
 python enrich_relevant_jobs.py run
 ```
 
+**NOTE:** Running this script takes some time, even not in production as you need to load a lot of large datasets!
+
 ### Qualification level
 
 We take a pattern matching approach to extracting the **minimum** qualification mentioned for a given job advert. The steps are as follows:

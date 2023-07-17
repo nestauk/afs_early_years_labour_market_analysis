@@ -32,7 +32,7 @@ class EnrichRelevantJobs(FlowSpec):
 
     @step
     def get_data(self):
-        """Get and prepare relevant job adverts from OJO dataset."""
+        """Get and prepare relevant datasets."""
         from afs_early_years_labour_market_analysis.getters.ojd_daps import (
             get_eyp_relevant_job_adverts,
             get_similar_job_adverts,
@@ -52,6 +52,20 @@ class EnrichRelevantJobs(FlowSpec):
         self.salaries = get_salaries()
         self.locations = get_locations()
         self.skills = get_skills()
+
+        self.rural_urban_nuts = (
+            pd.read_csv(
+                "s3://afs-early-years-labour-market-analysis/inputs/rural_urban_nuts.csv"
+            )[["NUTS315CD", "RUC11CD", "RUC11", "Broad_RUC11"]]
+            .assign(itl_3_code=lambda x: x["NUTS315CD"].str.replace("UK", "TL"))
+            .rename(
+                columns={
+                    "RUC11CD": "ruc11_code",
+                    "RUC11": "ruc11",
+                    "Broad_RUC11": "broad_ruc11",
+                }
+            )
+        )
 
         # convert id to int
         for df in [
@@ -81,6 +95,9 @@ class EnrichRelevantJobs(FlowSpec):
     @step
     def add_location_salaries(self):
         """Add location and salary data to relevant job adverts."""
+        import afs_early_years_labour_market_analysis.utils.data_enrichment as de
+
+        print("Adding location and salaries information...")
         self.eyp_enriched_relevant_job_adverts = (
             self.relevant_job_adverts_eyp.merge(
                 self.salaries,
@@ -103,6 +120,29 @@ class EnrichRelevantJobs(FlowSpec):
             .rename(columns={"job_location_raw_y": "job_location_raw"})
         )
 
+        # replace old nuts 3 codes for london to merged TL code
+        itl_london_codes = self.rural_urban_nuts[
+            self.rural_urban_nuts["NUTS315CD"].isin(de.london_nuts_3)
+        ]["itl_3_code"].to_list()
+
+        self.rural_urban_nuts["itl_3_code"] = self.rural_urban_nuts[
+            "itl_3_code"
+        ].replace(itl_london_codes, "TLI")
+
+        self.eyp_enriched_relevant_job_adverts_locmetadata = pd.merge(
+            self.eyp_enriched_relevant_job_adverts,
+            self.rural_urban_nuts,
+            on="itl_3_code",
+            how="left",
+        ).drop(columns=["NUTS315CD"])
+
+        self.sim_enriched_relevant_job_adverts_locmetadata = pd.merge(
+            self.sim_enriched_relevant_job_adverts,
+            self.rural_urban_nuts,
+            on="itl_3_code",
+            how="left",
+        ).drop(columns=["NUTS315CD"])
+
         self.eyp_relevant_skills = self.relevant_job_adverts_eyp[["id"]].merge(
             self.skills, on="id", how="inner"
         )
@@ -118,11 +158,14 @@ class EnrichRelevantJobs(FlowSpec):
         qualification level for EYP-specific job adverts."""
         import toolz
 
+        print("Generating job description list...")
         self.eyp_clean_jobs_list = self.eyp_jobs.clean_description.unique().tolist()
 
-        self.eyp_clean_jobs_list if self.production else self.eyp_clean_jobs_list[
-            : self.chunk_size
-        ]
+        self.eyp_clean_jobs_list = (
+            self.eyp_clean_jobs_list
+            if self.production
+            else self.eyp_clean_jobs_list[: self.chunk_size]
+        )
 
         self.eyp_chunks = list(
             toolz.partition_all(self.chunk_size, self.eyp_clean_jobs_list)
@@ -135,6 +178,7 @@ class EnrichRelevantJobs(FlowSpec):
         """Extract qualification levels per job description chunk"""
         import afs_early_years_labour_market_analysis.utils.data_enrichment as de
 
+        print("Extracting qualification levels...")
         self.clean_job_quals = [
             de.get_qualification_level(clean_job_desc) for clean_job_desc in self.input
         ]
@@ -160,57 +204,15 @@ class EnrichRelevantJobs(FlowSpec):
             .T.to_dict()
         )
 
-        self.eyp_enriched_relevant_job_adverts[
+        self.eyp_enriched_relevant_job_adverts_locmetadata[
             "qualification_level"
-        ] = self.eyp_enriched_relevant_job_adverts.id.map(id2qual_dict)
-
-        self.next(self.add_location_metadata)
-
-    @step
-    def add_location_metadata(self):
-        """Add additional location metadata to enriched datasets."""
-        import afs_early_years_labour_market_analysis.utils.data_enrichment as de
-
-        rural_urban_nuts = (
-            pd.read_csv(
-                "s3://afs-early-years-labour-market-analysis/inputs/rural_urban_nuts.csv"
-            )[["NUTS315CD", "RUC11CD", "RUC11", "Broad_RUC11"]]
-            .assign(itl_3_code=lambda x: x["NUTS315CD"].str.replace("UK", "TL"))
-            .rename(
-                columns={
-                    "RUC11CD": "ruc11_code",
-                    "RUC11": "ruc11",
-                    "Broad_RUC11": "broad_ruc11",
-                }
-            )
-        )
-
-        # replace old nuts 3 codes for london to merged TL code
-        itl_london_codes = rural_urban_nuts[
-            rural_urban_nuts["NUTS315CD"].isin(de.london_nuts_3)
-        ]["itl_3_code"].to_list()
-
-        rural_urban_nuts["itl_3_code"] = rural_urban_nuts["itl_3_code"].replace(
-            itl_london_codes, "TLI"
-        )
-
-        self.eyp_enriched_relevant_job_adverts_locmetadata = pd.merge(
-            self.eyp_enriched_relevant_job_adverts,
-            rural_urban_nuts,
-            on="itl_3_code",
-            how="left",
-        ).drop(columns=["NUTS315CD"])
-        self.sim_enriched_relevant_job_adverts_locmetadata = pd.merge(
-            self.sim_enriched_relevant_job_adverts,
-            rural_urban_nuts,
-            on="itl_3_code",
-            how="left",
-        ).drop(columns=["NUTS315CD"])
+        ] = self.eyp_enriched_relevant_job_adverts_locmetadata.id.map(id2qual_dict)
 
         self.next(self.save_data)
 
     @step
     def save_data(self):
+        """Save enriched datasets to s3."""
         # save to s3
         if self.production:
             self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
