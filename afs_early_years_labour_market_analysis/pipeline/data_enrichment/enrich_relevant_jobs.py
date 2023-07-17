@@ -22,7 +22,7 @@ class EnrichRelevantJobs(FlowSpec):
     chunk_size = Parameter("chunk_size", help="Chunk size for processing", default=1000)
     # add a boolean parameter to define if flow should be written in production or not
     production = Parameter(
-        "production", help="Run flow in production mode", default=True
+        "production", help="Run flow in production mode", default=False
     )
 
     @step
