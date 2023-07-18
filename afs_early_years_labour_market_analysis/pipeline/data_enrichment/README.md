@@ -2,9 +2,9 @@
 
 This folder contains the scripts used to enrich the OJO data used in the analysis.
 
-## Enrichment steps
+## `/data_enrichment/enrich_relevant_jobs.py`
 
-We enrich OJO data by adding:
+This script enriches OJO data by adding:
 
 - locations;
 - salaries;
@@ -140,3 +140,11 @@ According to [this guidance on qualifications from the UK government](https://ww
 | 6                    | Qualified Teacher Status (QTS)                                                                                                                                                                                  |
 | 6                    | Early Years Teacher Status (EYTS)                                                                                                                                                                               |
 | 6                    | Early Years Professional Status (EYPS)                                                                                                                                                                          |
+
+## `/data_enrichment/filter_relevant_jobs.py`
+
+This script creates summarised datasets using the enriched data and saves it locally to conduct OJO analysis.
+
+To generate relevant datasets locally:
+
+`python enrich_relevant_jobs.py`

@@ -1,0 +1,30 @@
+@import url("https://fonts.cdnfonts.com/css/century-gothic");
+html,
+body,
+[class*="css"] {
+  font-family: "Century Gothic";
+  font-size: 18px;
+  font-weight: 500;
+  color: #000000;
+}
+div[data-testid="stExpander"] div[role="button"] p {
+  font-size: 30px;
+}
+.title-font {
+  font-size: 48px !important;
+  font-weight: bold;
+  color: #0f294a;
+  vertical-align: middle;
+}
+.subtitle-font {
+  font-size: 26px !important;
+  color: #646363;
+}
+.big-font {
+  font-size: 34px !important;
+  font-weight: bold;
+}
+.medium-font {
+  font-size: 26px !important;
+  font-weight: bold;
+}
