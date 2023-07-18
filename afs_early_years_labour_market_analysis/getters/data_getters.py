@@ -146,9 +146,12 @@ def load_s3_data(bucket_name, file_name):
         return pd.read_parquet(f"s3://{bucket_name}/{file_name}")
     elif fnmatch(file_name, "*.xlsx") or fnmatch(file_name, "*.xls"):
         pd.read_excel(f"s3://{bucket_name}/{file_name}")
+    elif fnmatch(file_name, "*.txt"):
+        file = obj.get()["Body"].read().decode()
+        return [f.split("\t") for f in file.split("\n")]
     else:
         logger.error(
-            'Function not supported for file type other than "*.csv", "*.jsonl.gz", "*.jsonl", "*.json" or "*.parquet"'
+            'Function not supported for file type other than "*.csv", "*.txt", "*.jsonl.gz", "*.jsonl", "*.json" or "*.parquet"'
         )
 
 

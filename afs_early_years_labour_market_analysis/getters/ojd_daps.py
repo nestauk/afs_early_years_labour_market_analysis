@@ -17,7 +17,7 @@ def get_job_adverts() -> pd.DataFrame:
 
 
 def get_eyp_relevant_job_adverts() -> pd.DataFrame:
-    """Returns dataframe of relevant job adverts"""
+    """Returns dataframe of EYP job adverts"""
     return download_obj(
         BUCKET_NAME,
         "inputs/ojd_daps_extract/relevant_job_adverts_eyp.parquet",
@@ -25,11 +25,11 @@ def get_eyp_relevant_job_adverts() -> pd.DataFrame:
     )
 
 
-def get_shop_relevant_job_adverts() -> pd.DataFrame:
-    """Returns dataframe of relevant job adverts"""
+def get_similar_job_adverts() -> pd.DataFrame:
+    """Returns dataframe of similar job adverts to EYP jobs"""
     return download_obj(
         BUCKET_NAME,
-        "inputs/ojd_daps_extract/relevant_job_adverts_shop.parquet",
+        "inputs/ojd_daps_extract/relevant_job_adverts_sim_occs.parquet",
         download_as="dataframe",
     )
 
@@ -62,7 +62,7 @@ def get_skills() -> pd.DataFrame:
 
 
 def get_eyp_relevant_enriched_job_adverts() -> pd.DataFrame:
-    """Returns dataframe of relevant enriched job adverts"""
+    """Returns dataframe of relevant enriched job adverts for EYP job ads"""
     return download_obj(
         BUCKET_NAME,
         "inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
@@ -70,17 +70,18 @@ def get_eyp_relevant_enriched_job_adverts() -> pd.DataFrame:
     )
 
 
-def get_shop_relevant_enriched_job_adverts() -> pd.DataFrame:
-    """Returns dataframe of relevant enriched job adverts"""
+def get_similar_enriched_job_adverts() -> pd.DataFrame:
+    """Returns dataframe of relevant enriched job adverts for similar job ads"""
+
     return download_obj(
         BUCKET_NAME,
-        "inputs/ojd_daps_extract/enriched_relevant_job_adverts_shop.parquet",
+        "inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
         download_as="dataframe",
     )
 
 
 def get_eyp_relevant_skills() -> pd.DataFrame:
-    """Returns dataframe of relevant skills"""
+    """Returns dataframe of relevant skills from EYP job ads"""
     return download_obj(
         BUCKET_NAME,
         "inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
@@ -88,10 +89,10 @@ def get_eyp_relevant_skills() -> pd.DataFrame:
     )
 
 
-def get_shop_relevant_skills() -> pd.DataFrame:
-    """Returns dataframe of relevant skills"""
+def get_similar_skills() -> pd.DataFrame:
+    """Returns dataframe of relevant skills from similar job ads"""
     return download_obj(
         BUCKET_NAME,
-        "inputs/ojd_daps_extract/relevant_skills_shop.parquet",
+        "inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
         download_as="dataframe",
     )
