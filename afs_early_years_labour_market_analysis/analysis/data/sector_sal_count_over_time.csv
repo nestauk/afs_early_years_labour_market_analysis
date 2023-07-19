@@ -1,0 +1,165 @@
+month_year,sector,count,median_max_annualised_salary,median_min_annualised_salary
+2020-12,Early Years Practitioner,437,21450.0,19500.0
+2020-12,Primary School Teacher,29,34885.5,22100.0
+2020-12,Sales Assistant,2,,
+2020-12,Secondary School Teacher,42,,
+2020-12,Special Needs Teacher,3,21184.8,16515.2
+2020-12,Teaching Assistant,890,20800.0,16900.0
+2021-01,Early Years Practitioner,4648,22000.0,18700.0
+2021-01,Primary School Teacher,610,41600.0,30000.0
+2021-01,Sales Assistant,8,18749.25,17569.5
+2021-01,Secondary School Teacher,475,24700.0,19500.0
+2021-01,Special Needs Teacher,235,23400.0,18200.0
+2021-01,Teaching Assistant,6420,20800.0,18200.0
+2021-02,Early Years Practitioner,5800,23000.0,19250.0
+2021-02,Primary School Teacher,1074,39782.0,31604.0
+2021-02,Sales Assistant,126,17004.0,17004.0
+2021-02,Secondary School Teacher,471,22100.0,19500.0
+2021-02,Special Needs Teacher,647,23400.0,18200.0
+2021-02,Teaching Assistant,6764,20800.0,18200.0
+2021-03,Early Years Practitioner,8408,23000.0,19500.0
+2021-03,Primary School Teacher,2141,36400.0,27543.0
+2021-03,Sales Assistant,208,19053.0,18200.0
+2021-03,Secondary School Teacher,512,22100.0,18850.0
+2021-03,Special Needs Teacher,776,23400.0,18200.0
+2021-03,Teaching Assistant,12550,22100.0,18200.0
+2021-04,Early Years Practitioner,7375,22425.0,19500.0
+2021-04,Primary School Teacher,1843,38052.0,32157.0
+2021-04,Sales Assistant,196,18250.0,18250.0
+2021-04,Secondary School Teacher,437,22750.0,18200.0
+2021-04,Special Needs Teacher,610,23400.0,18641.0
+2021-04,Teaching Assistant,8982,22100.0,18200.0
+2021-05,Early Years Practitioner,9287,23000.0,20000.0
+2021-05,Primary School Teacher,2438,41200.0,29907.5
+2021-05,Sales Assistant,557,19460.0,19460.0
+2021-05,Secondary School Teacher,578,23400.0,19500.0
+2021-05,Special Needs Teacher,931,23400.0,18200.0
+2021-05,Teaching Assistant,15341,20800.0,18200.0
+2021-06,Early Years Practitioner,7131,24000.0,21000.0
+2021-06,Primary School Teacher,2183,36400.0,26000.0
+2021-06,Sales Assistant,419,18533.0,18532.5
+2021-06,Secondary School Teacher,731,22100.0,18200.0
+2021-06,Special Needs Teacher,765,23400.0,18200.0
+2021-06,Teaching Assistant,19824,20800.0,17000.0
+2021-07,Early Years Practitioner,8261,23400.0,20000.0
+2021-07,Primary School Teacher,1869,36400.0,26000.0
+2021-07,Sales Assistant,563,19460.0,19460.0
+2021-07,Secondary School Teacher,1064,20800.0,16900.0
+2021-07,Special Needs Teacher,1021,23400.0,19500.0
+2021-07,Teaching Assistant,19217,20800.0,16900.0
+2021-08,Early Years Practitioner,6258,23692.5,21000.0
+2021-08,Primary School Teacher,1315,23400.0,19500.0
+2021-08,Sales Assistant,574,19460.0,19460.0
+2021-08,Secondary School Teacher,138,22100.0,18850.0
+2021-08,Special Needs Teacher,227,22100.0,18200.0
+2021-08,Teaching Assistant,10386,20800.0,18200.0
+2021-09,Early Years Practitioner,5549,23000.0,19500.0
+2021-09,Primary School Teacher,1659,23400.0,19500.0
+2021-09,Sales Assistant,410,22000.0,19460.0
+2021-09,Secondary School Teacher,733,23400.0,18200.0
+2021-09,Special Needs Teacher,1094,23400.0,19500.0
+2021-09,Teaching Assistant,15573,20800.0,18200.0
+2021-10,Early Years Practitioner,8603,23400.0,20100.0
+2021-10,Primary School Teacher,2929,29900.0,19500.0
+2021-10,Sales Assistant,1235,19500.0,19460.0
+2021-10,Secondary School Teacher,813,23400.0,19500.0
+2021-10,Special Needs Teacher,1549,23400.0,18200.0
+2021-10,Teaching Assistant,21375,22100.0,18200.0
+2021-11,Early Years Practitioner,8091,24000.0,20000.0
+2021-11,Primary School Teacher,3728,29900.0,20800.0
+2021-11,Sales Assistant,1317,19500.0,19460.0
+2021-11,Secondary School Teacher,634,23400.0,18200.0
+2021-11,Special Needs Teacher,1930,22100.0,18200.0
+2021-11,Teaching Assistant,22171,20800.0,18200.0
+2021-12,Early Years Practitioner,6637,23000.0,19890.0
+2021-12,Primary School Teacher,2192,39000.0,31200.0
+2021-12,Sales Assistant,758,22074.0,21586.5
+2021-12,Secondary School Teacher,549,22100.0,19500.0
+2021-12,Special Needs Teacher,545,22100.0,18200.0
+2021-12,Teaching Assistant,16850,21795.0,18200.0
+2022-01,Early Years Practitioner,8706,23400.0,20800.0
+2022-01,Primary School Teacher,3017,26000.0,19500.0
+2022-01,Sales Assistant,1174,19549.0,19549.0
+2022-01,Secondary School Teacher,478,22500.0,18200.0
+2022-01,Special Needs Teacher,965,23400.0,18200.0
+2022-01,Teaching Assistant,15927,22100.0,18200.0
+2022-02,Early Years Practitioner,8255,24000.0,20800.0
+2022-02,Primary School Teacher,2416,32500.0,26000.0
+2022-02,Sales Assistant,1938,19549.0,19459.0
+2022-02,Secondary School Teacher,363,23400.0,18200.0
+2022-02,Special Needs Teacher,756,23400.0,18200.0
+2022-02,Teaching Assistant,11120,22100.0,18200.0
+2022-03,Early Years Practitioner,9296,24880.0,20865.0
+2022-03,Primary School Teacher,1916,40300.0,28600.0
+2022-03,Sales Assistant,1727,19948.5,19549.0
+2022-03,Secondary School Teacher,553,23400.0,18200.0
+2022-03,Special Needs Teacher,665,23400.0,18200.0
+2022-03,Teaching Assistant,14198,22100.0,18200.0
+2022-04,Early Years Practitioner,5346,24024.0,21840.0
+2022-04,Primary School Teacher,1893,39000.0,31000.0
+2022-04,Sales Assistant,1014,20299.5,20299.5
+2022-04,Secondary School Teacher,494,26000.0,20800.0
+2022-04,Special Needs Teacher,622,23400.0,18525.0
+2022-04,Teaching Assistant,10602,22100.0,19500.0
+2022-05,Early Years Practitioner,8640,25350.0,21840.0
+2022-05,Primary School Teacher,3120,40300.0,29915.0
+2022-05,Sales Assistant,1260,20338.5,20299.5
+2022-05,Secondary School Teacher,513,24700.0,18200.0
+2022-05,Special Needs Teacher,1209,26000.0,19500.0
+2022-05,Teaching Assistant,15338,23400.0,19500.0
+2022-06,Early Years Practitioner,6516,24939.0,22100.0
+2022-06,Primary School Teacher,3605,41136.0,31200.0
+2022-06,Sales Assistant,1019,20299.5,20299.5
+2022-06,Secondary School Teacher,613,24537.5,20800.0
+2022-06,Special Needs Teacher,1196,23400.0,19500.0
+2022-06,Teaching Assistant,21168,23000.0,19500.0
+2022-07,Early Years Practitioner,5618,26520.0,22000.0
+2022-07,Primary School Teacher,3056,33157.0,26000.0
+2022-07,Sales Assistant,1361,20299.5,20299.5
+2022-07,Secondary School Teacher,626,23400.0,20800.0
+2022-07,Special Needs Teacher,1305,23400.0,20800.0
+2022-07,Teaching Assistant,25418,23400.0,19500.0
+2022-08,Early Years Practitioner,4471,25000.0,21000.0
+2022-08,Primary School Teacher,1990,28600.0,22100.0
+2022-08,Sales Assistant,764,21500.0,20815.0
+2022-08,Secondary School Teacher,319,24700.0,19500.0
+2022-08,Special Needs Teacher,993,24000.0,19500.0
+2022-08,Teaching Assistant,18866,23400.0,19500.0
+2022-09,Early Years Practitioner,7296,25603.5,21600.0
+2022-09,Primary School Teacher,2978,26000.0,20800.0
+2022-09,Sales Assistant,612,20815.0,20000.0
+2022-09,Secondary School Teacher,1595,23400.0,19500.0
+2022-09,Special Needs Teacher,1918,23400.0,19500.0
+2022-09,Teaching Assistant,24381,23400.0,19500.0
+2022-10,Early Years Practitioner,3129,25350.0,21586.5
+2022-10,Primary School Teacher,3101,26000.0,20800.0
+2022-10,Sales Assistant,873,20815.0,20475.0
+2022-10,Secondary School Teacher,850,23400.0,19500.0
+2022-10,Special Needs Teacher,1267,26000.0,19500.0
+2022-10,Teaching Assistant,20651,23400.0,19500.0
+2022-11,Primary School Teacher,3375,39000.0,29915.0
+2022-11,Sales Assistant,1262,21840.0,18525.0
+2022-11,Secondary School Teacher,735,23400.0,19500.0
+2022-11,Special Needs Teacher,1729,26000.0,20800.0
+2022-11,Teaching Assistant,20330,23400.0,19500.0
+2022-12,Primary School Teacher,1994,26000.0,20800.0
+2022-12,Sales Assistant,765,21500.0,18525.0
+2022-12,Secondary School Teacher,749,26000.0,20800.0
+2022-12,Special Needs Teacher,1141,24700.0,19500.0
+2022-12,Teaching Assistant,15227,23400.0,19500.0
+2023-01,Primary School Teacher,2467,26000.0,20800.0
+2023-01,Sales Assistant,776,21450.0,18000.0
+2023-01,Secondary School Teacher,628,24050.0,19500.0
+2023-01,Special Needs Teacher,1393,24700.0,19500.0
+2023-01,Teaching Assistant,20252,23400.0,19500.0
+2023-02,Primary School Teacher,2027,33800.0,26000.0
+2023-02,Sales Assistant,479,22000.0,13650.0
+2023-02,Secondary School Teacher,394,26000.0,20800.0
+2023-02,Special Needs Teacher,959,24700.0,19500.0
+2023-02,Teaching Assistant,14480,23400.0,19500.0
+2023-03,Early Years Practitioner,283,26000.0,23500.0
+2023-03,Primary School Teacher,2591,43193.0,31050.0
+2023-03,Sales Assistant,419,33000.0,25000.0
+2023-03,Secondary School Teacher,926,26000.0,20800.0
+2023-03,Special Needs Teacher,1456,24700.0,20800.0
+2023-03,Teaching Assistant,14244,24700.0,20800.0

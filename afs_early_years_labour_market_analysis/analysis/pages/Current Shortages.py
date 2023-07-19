@@ -1,5 +1,5 @@
 """
-OJO Analysis
+OJO Analysis streamlit page
 """
 
 import os
@@ -9,9 +9,10 @@ import pandas as pd
 import numpy as np
 import altair as alt
 import random
+import streamlit as st
+import json
 
 import analysis_utils as au
-import streamlit as st
 
 # ==================================Variables & Set Up ===========================================
 
@@ -31,7 +32,8 @@ data_folder = os.path.join(PROJECT_DIR, "data")
 images_folder = os.path.join(PROJECT_DIR, "images")
 
 st.set_page_config(
-    page_title="EYP Shortages", page_icon=os.path.join(images_folder, "nesta_logo.png")
+    page_title="EYP Current and Future shortages",
+    page_icon=os.path.join(images_folder, "nesta_logo.png"),
 )
 
 # ==================================Load data function ===================================
@@ -39,26 +41,23 @@ st.set_page_config(
 # load data functions
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache_data
 def load_ojo_analysis_data():
     sal_count_sector = pd.read_csv(
         os.path.join(data_folder, "sector_sal_count_over_time.csv")
     )
-    qual_count_sal = pd.read_csv(
-        os.path.join(data_folder, "qual_sal_count_over_time.csv")
-    )
-    qual_sal = pd.read_csv(os.path.join(data_folder, "sal_by_qual_level.csv"))
+    #read json file from local directory
+    eyp_metadata = json.load(open(os.path.join(data_folder, "eyp_job_metadata.json")))
+    
+    qual_data = pd.read_csv(os.path.join(data_folder, "qual_data.csv"))
 
-    return sal_count_sector, qual_count_sal, qual_sal
+    return sal_count_sector, eyp_metadata, qual_data
 
 
 # ==================================Graph functions======================================
 
 # load data
-sal_count_sector, qual_count_sal, qual_sal = load_ojo_analysis_data()
-
-## Summary statistics graphs
-
+sal_count_sector, eyp_metadata, qual_data = load_ojo_analysis_data()
 
 def make_over_time_graph(
     df_jobs: pd.DataFrame = sal_count_sector,
@@ -78,7 +77,7 @@ def make_over_time_graph(
     column_type_name = column_type_dict.get(column_type)
     df_jobs_filtered = df_jobs.query(f'sector == "{job_type}"')
 
-    over_time_graph = (
+    base = (
         alt.Chart(df_jobs_filtered)
         .mark_line()
         .encode(
@@ -89,43 +88,53 @@ def make_over_time_graph(
             tooltip=[alt.Tooltip(column_type, title=column_type_name)],
         )
     )
+    
+    if column_type_name == "Salary":
+        #add line for the median UK salary in 2023
+        hline = (
+                alt.Chart(pd.DataFrame({column_type: [33000], "color": ["red"]}))
+                .mark_rule(opacity=0.8, strokeDash=[5, 5])
+                .encode(y=column_type, color=alt.Color("color:N", scale=None))
+            )
 
+        base = base + hline
+    
     return (
-        au.configure_plots(over_time_graph)
-        .properties(width=600, height=400)
-        .configure_title(fontSize=chart_title_font_size)
-        .interactive()
-    )
+    au.configure_plots(base)
+    .properties(width=600, height=400)
+    .interactive())
 
+def make_qualification_graph(source: pd.DataFrame = qual_data):
+    """Make qualification graph
 
-def make_qualification_level_dist_graph():
-    """Make salary distribution graph by qualification level
+    Args:
+        source (pd.DataFrame, optional): Qualifications dataFrame. Defaults to qual_data.
 
     Returns:
-        Salary distribution graph by qualification level
+        alt.vegalite.v5.api.Chart: Interactive graph of qualification information 
     """
 
-    qual_sal.columns = [str(int(float(i))) for i in list(qual_sal.columns)]
+    qual_sorted = ['6', '5', '4', '3', '2', '1']
 
-    base = (
-        alt.Chart(qual_sal)
-        .transform_fold(list(qual_sal.columns), as_=["Qualification Level", "Salary"])
-        .mark_bar(opacity=0.3, binSpacing=0)
-        .encode(
-            alt.X(
-                "Salary:Q",
-                title="Salary",
-                bin=alt.Bin(maxbins=100),
-                scale=alt.Scale(domain=(0, 65000)),
-            ),
-            alt.Y("count()", title="# of Job Postings", stack=None),
-            alt.Color("Qualification Level:N"),
-        )
+    qual_count = alt.Chart(source).mark_bar().encode(
+        #sort values by count in descending order
+        x=alt.X('count', title="# of Job Adverts", type="quantitative"),
+        y=alt.Y('Qualification Level', sort=qual_sorted, type="ordinal"),
+        color=alt.Color('degree_not', title='Requires Degree', scale=alt.Scale(domain=['Yes', 'No'], range=[au.NESTA_COLOURS[1], au.NESTA_COLOURS[2]])),
+        tooltip=[alt.Tooltip('Qualification Level'), alt.Tooltip('count', title='# of Job Adverts')]
     )
 
-    title = "Salary Distribution by Qualification Level"
-    return au.configure_plots(base, chart_title=title)
+    qual_wage_ratio = alt.Chart(source).mark_bar().encode(
+        #sort values by count in descending order
+        x=alt.X('wage_ratio', title= "Wage Ratio", type="quantitative"),
+        y=alt.Y('Qualification Level', sort=qual_sorted, title=None, axis=None, type="ordinal"),
+        color=alt.Color('degree_not', title='Requires Degree', scale=alt.Scale(domain=['Yes', 'No'], range=[au.NESTA_COLOURS[1], au.NESTA_COLOURS[2]])),
+        tooltip=[alt.Tooltip('Qualification Level'), alt.Tooltip('median_salary', title='Median Annual Salary')]
+    )
 
+    qual_graph = qual_count | qual_wage_ratio
+    
+    return au.configure_plots(qual_graph)
 
 # ==================================Streamlit App======================================
 
@@ -149,20 +158,25 @@ st.markdown(intro_text)
 
 st.header("", anchor="within_eyp")
 
-sum_text = """
-This is filler text for the within eyp demand section.
+sum_text = f"""
+This is filler text for the eyp section. Include:
+
+- summary stats
+    - There are {eyp_metadata['no_jobs']} Early Year Practitioner job postings in the UK between **{eyp_metadata['job_adverts_range'][0]}** and **{eyp_metadata['job_adverts_range'][0]}**. The annualised salary range is between **£{round(eyp_metadata['max_sal_info']['min'])}** and **£{round(eyp_metadata['max_sal_info']['max'])}**.
+- qualification level observations 
 """
 
 st.markdown(
-    "<p class='medium-font'>Demand for Early Year Practitioners</p>",
+    "<p class='medium-font'>Early Year Practitioners Deep Dive</p>",
     unsafe_allow_html=True,
 )
 
-st.markdown(sum_text)
+st.markdown(sum_text, unsafe_allow_html=True)
+    
+qual_chart = make_qualification_graph()
 
-qual_graph = make_qualification_level_dist_graph()
-
-st.altair_chart(qual_graph, use_container_width=True)
+# # Display the chart using Streamlit
+st.altair_chart(qual_chart, use_container_width=True)
 
 # ------ Across Sector comparison -------
 
@@ -181,8 +195,9 @@ st.markdown(
 
 st.markdown(sum_text)
 
+sectors = list(sal_count_sector.sector.unique())
 sector_group = st.selectbox(
-    "Select a sector", list(sal_count_sector.sector.unique()), index=1
+    "Select a sector", sectors, index=1
 )
 
 metric1, metric2 = st.columns((1, 1))
@@ -203,15 +218,17 @@ between_sectors_text = """
 The graph on the right shows the rolling monthly number of job postings while the
 graph on the left shows the monthly median maximum annualised salary of job postings between 2020 and 2023.
 
-While some similar sectors have seen a slight increase in salary over time, most have remained stable.
+While some similar sectors have seen a slight increase in salary over time, most have remained stable. The red dotted line indicates the median full time UK salary across all occupations in 2023 (£33,000).
 """
 st.markdown(between_sectors_text)
 
 count_over_time_by_sector = make_over_time_graph(
     job_type=sector_group, column_type="count"
 )
+
+column_type = "median_max_annualised_salary"
 salary_over_time_by_sector = make_over_time_graph(
-    job_type=sector_group, column_type="median_max_annualised_salary"
+    job_type=sector_group, column_type=column_type
 )
 
 col1, col2 = st.columns([50, 50])
@@ -220,3 +237,11 @@ with col1:
     st.altair_chart(count_over_time_by_sector, use_container_width=True)
 with col2:
     st.altair_chart(salary_over_time_by_sector, use_container_width=True)
+
+between_sectors_demand = """
+We can look look at change in salary or # of job postings for similar sectors as a proxy for 
+demand. 
+"""
+st.markdown(between_sectors_demand)
+
+demand_type = st.selectbox("Select a demand type", ["# of Postings", "Salary", "Skills"], index=0)

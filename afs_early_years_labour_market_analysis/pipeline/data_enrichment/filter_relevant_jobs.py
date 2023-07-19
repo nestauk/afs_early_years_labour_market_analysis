@@ -11,7 +11,7 @@ from afs_early_years_labour_market_analysis.getters.ojd_daps import (
 
 import pandas as pd
 import os
-from typing import Optional
+import json
 
 sim_jobs_occ_dict = {
     "Primary School": "Primary School Teacher",
@@ -104,18 +104,48 @@ if __name__ == "__main__":
         analysis_data_path / "sector_sal_count_over_time.csv", index=False
     )
 
-    # for differences in salary and count by qualification level
-    print("saving median salary and count by qualification level...")
-    qual_demand = filter_data(all_jobs, col_to_filter="qualification_level")
-    qual_demand.to_csv(analysis_data_path / "qual_sal_count_over_time.csv", index=False)
+    print("save eyp job metadata...")
+    eyp_jobs_metadata = {}
+    eyp_jobs_clean = all_jobs.query(
+        'sector == "Early Years Practitioner"'
+    ).drop_duplicates(subset=["id"])
 
-    print("saving salary by qualification level...")
-    sal_by_level = (
-        all_jobs.query("~qualification_level.isna()")[
-            ["qualification_level", "max_annualised_salary"]
-        ]
-        .pivot(columns="qualification_level", values="max_annualised_salary")
-        .dropna(how="all")
+    eyp_jobs_metadata["no_jobs"] = len(eyp_jobs_clean)
+    eyp_jobs_metadata[
+        "min_sal_info"
+    ] = eyp_jobs_clean.min_annualised_salary.describe().to_dict()
+    eyp_jobs_metadata[
+        "max_sal_info"
+    ] = eyp_jobs_clean.max_annualised_salary.describe().to_dict()
+    eyp_jobs_metadata["job_adverts_range"] = (
+        str(eyp_jobs_clean.created.min().date()),
+        str(eyp_jobs_clean.created.max().date()),
     )
 
-    sal_by_level.to_csv(analysis_data_path / "sal_by_qual_level.csv", index=False)
+    with open(analysis_data_path / "eyp_job_metadata.json", "w") as fp:
+        json.dump(eyp_jobs_metadata, fp)
+
+    print("saving qualification level data...")
+    source = (
+        eyp_jobs_clean.groupby("qualification_level")
+        .agg({"max_annualised_salary": "median", "id": "count"})
+        .reset_index()
+        .assign(
+            qualification_level=lambda x: x.qualification_level.astype(int).astype(str)
+        )
+        .assign(
+            wage_ratio=lambda x: x.max_annualised_salary
+            / eyp_jobs.max_annualised_salary.median()
+        )
+        .rename(
+            columns={
+                "id": "count",
+                "max_annualised_salary": "median_salary",
+                "qualification_level": "Qualification Level",
+            }
+        )
+    )
+    source["degree_not"] = source["Qualification Level"].apply(
+        lambda x: "Yes" if x >= "4" else "No"
+    )
+    source.to_csv(analysis_data_path / "qual_data.csv", index=False)
