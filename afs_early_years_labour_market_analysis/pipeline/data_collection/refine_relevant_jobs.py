@@ -25,8 +25,8 @@ sim_job_titles = list(
     "montessori teacher",
 ]
 
-##add sales assistant job titles to list
-shop_job_titles = [
+##add sales assistant + hospitality job titles to list
+other_sim_titles = [
     "retail assistant",
     "shop assistant",
     "sale assistant",
@@ -36,23 +36,26 @@ shop_job_titles = [
     "shop floor assistant",
     "volunteer shop assistant",
     "volunteer shop floor assistant",
+    "waiter",
+    "waitress",
+    "team member - restaurant",
+    "team member - night inspection",
+    "waiting staff",
 ]
 
 all_sim_job_titles = [
     job_title.lower() for job_title in sim_job_titles
-] + shop_job_titles
+] + other_sim_titles
 
 # ditto for occupations
-shop_occupation_titles = [
+occupation_titles = [
     "Retail Assistant",
     "Retail Sales",
     "Store Assistant",
     "Sales Assistant",
     "Supervisor Store",
     "Supervisor Store",
-]
-
-sim_occ_titles = [
+    "other hospitality &amp; catering",
     "key stage 3 &amp; 4",
     "key stage 2",
     "key stage 5",
@@ -62,8 +65,6 @@ sim_occ_titles = [
     "primary school",
     "special needs",
 ]
-
-all_sim_occ_titles = sim_occ_titles + shop_occupation_titles
 
 # Most common job titles in the "Nursery" sector
 eyp_occupation_titles = [
@@ -136,7 +137,7 @@ class RefineRelevantJobs(FlowSpec):
 
         relevant_job_adverts_sim_occs = self.job_adverts[
             (self.job_adverts["job_title_raw"].str.lower().isin(all_sim_job_titles))
-            | (self.job_adverts["occupation"].str.lower().isin(all_sim_occ_titles))
+            | (self.job_adverts["occupation"].str.lower().isin(occupation_titles))
             | (
                 self.job_adverts["sector"]
                 .str.lower()
