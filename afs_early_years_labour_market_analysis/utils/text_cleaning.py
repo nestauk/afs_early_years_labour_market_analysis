@@ -126,3 +126,22 @@ def clean_text(text: str) -> List[str]:
         List[str]: List of cleaned job description sentences
     """
     return pipe(text, detect_camelcase, replacements)
+
+
+def clean_job_title(job_title: str) -> str:
+    """Minimal cleaning of job title.
+
+    Args:
+        job_title (str): job title to clean
+
+    Returns:
+        str: cleaned job title
+    """
+
+    # strip punctuation
+    punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+    job_title = job_title.translate(str.maketrans("", "", punctuation))
+    # remove numbers
+    job_title = re.sub(r"\d+", "", job_title)
+    # remove whitespace
+    return job_title.lower().strip()

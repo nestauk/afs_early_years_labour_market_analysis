@@ -8,28 +8,9 @@ from metaflow import FlowSpec, step, Parameter
 from afs_early_years_labour_market_analysis.getters.ojd_daps import get_job_adverts
 from afs_early_years_labour_market_analysis.getters.data_getters import load_s3_data
 from afs_early_years_labour_market_analysis import BUCKET_NAME
+from afs_early_years_labour_market_analysis.utils.text_cleaning import clean_job_title
 
 import re
-
-
-def clean_job_title(job_title: str) -> str:
-    """Minimal cleaning of job title.
-
-    Args:
-        job_title (str): job title to clean
-
-    Returns:
-        str: cleaned job title
-    """
-
-    # strip punctuation
-    punctuation = "!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
-    job_title = job_title.translate(str.maketrans("", "", punctuation))
-    # remove numbers
-    job_title = re.sub(r"\d+", "", job_title)
-    # remove whitespace
-    return job_title.lower().strip()
-
 
 # ------------------------------------------------ EYP JOB ADVERT QUERIES ---------------------------------------------------
 eyp_occupation_titles = [
@@ -85,9 +66,9 @@ job_titles_to_match_on = [
     "secondary teacher",
     "waiter",
     "waitress",
-    "sales assistant",
     "retail assistant",
     "store assistant",
+    "shop assistant",
     "supply teacher",
 ]
 
@@ -103,9 +84,9 @@ job_title_group_mapper = {
     "secondary teacher": "Secondary School Teacher",
     "waiter": "Waiter",
     "waitress": "Waiter",
-    "sales assistant": "Sales Assistant",
-    "retail assistant": "Sales Assistant",
-    "store assistant": "Sales Assistant",
+    "retail assistant": "Retail Assistant",
+    "store assistant": "Retail Assistant",
+    "shop assistant": "Retail Assistant",
     "supply teacher": "Supply Teacher",
 }
 
@@ -238,6 +219,7 @@ class RefineRelevantJobs(FlowSpec):
                 .str.contains("early years")
             )
         ]
+        self.relevant_job_adverts_eyp["sector"] = "Early Years Practitioner"
         print(f"the shape of the EYP data is: {self.relevant_job_adverts_eyp.shape}")
 
         # 1 -- query job adverts to make sure they are in relevant domains and sectors
@@ -263,10 +245,12 @@ class RefineRelevantJobs(FlowSpec):
             sim_job_adverts.query("matched_job_title.notnull()")
             # clean up sector names with the job title group mapper - we're not really
             # using sectors, we're just using job titles to compare EYP with.
-            .assign(
-                sector=lambda x: x.matched_job_title.map(job_title_group_mapper)
-            ).reset_index(drop=True)
-        )
+            .assign(sector=lambda x: x.matched_job_title.map(job_title_group_mapper))
+            # drop any job titles that have the word 'trainee' or 'aspiring' in
+            .query('clean_job_title.str.contains("trainee") == False').query(
+                'clean_job_title.str.contains("aspiring") == False'
+            )
+        ).reset_index(drop=True)
 
         # 4 -- make sure eyp job ads are not in sim occ jobs
         eyp_job_ids = self.relevant_job_adverts_eyp.id.astype(str).to_list()
