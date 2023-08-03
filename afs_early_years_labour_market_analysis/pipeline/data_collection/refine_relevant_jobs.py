@@ -8,65 +8,11 @@ from metaflow import FlowSpec, step, Parameter
 from afs_early_years_labour_market_analysis.getters.ojd_daps import get_job_adverts
 from afs_early_years_labour_market_analysis.getters.data_getters import load_s3_data
 from afs_early_years_labour_market_analysis import BUCKET_NAME
+from afs_early_years_labour_market_analysis.utils.text_cleaning import clean_job_title
 
-from itertools import chain
+import re
 
-# load most similar occupation names based on Karlis's transitions algorithm
-
-sim_job_titles = list(
-    chain(*load_s3_data(BUCKET_NAME, "inputs/similar_occupations.txt"))
-) + [
-    "primary teacher",
-    "secondary school teacher",
-    "teaching assistant",
-    "special educational needs teaching assistant",
-    "special education teacher",
-    "special education needs teaching asistant",
-    "montessori teacher",
-]
-
-##add sales assistant + hospitality job titles to list
-other_sim_titles = [
-    "retail assistant",
-    "shop assistant",
-    "sale assistant",
-    "sales assistant",
-    "store assistant",
-    "retail store assistant",
-    "shop floor assistant",
-    "volunteer shop assistant",
-    "volunteer shop floor assistant",
-    "waiter",
-    "waitress",
-    "team member - restaurant",
-    "team member - night inspection",
-    "waiting staff",
-]
-
-all_sim_job_titles = [
-    job_title.lower() for job_title in sim_job_titles
-] + other_sim_titles
-
-# ditto for occupations
-occupation_titles = [
-    "Retail Assistant",
-    "Retail Sales",
-    "Store Assistant",
-    "Sales Assistant",
-    "Supervisor Store",
-    "Supervisor Store",
-    "other hospitality &amp; catering",
-    "key stage 3 &amp; 4",
-    "key stage 2",
-    "key stage 5",
-    "key stage 1",
-    "teaching assistant",
-    "secondary school",
-    "primary school",
-    "special needs",
-]
-
-# Most common job titles in the "Nursery" sector
+# ------------------------------------------------ EYP JOB ADVERT QUERIES ---------------------------------------------------
 eyp_occupation_titles = [
     "Nursery Nurse",
     "Nursery Practitioner",
@@ -107,6 +53,146 @@ eyp_job_titles = [
     "early years teaching assistant",
 ]
 
+# ------------------------------------------------ SIMILAR JOB ADVERT QUERIES ---------------------------------------------------
+
+job_titles_to_match_on = [
+    "teaching assistant",
+    "sen teaching assistant",
+    "sen teacher assistant" "primary school teacher",
+    "primary teacher",
+    "special needs teacher",
+    "sen teacher",
+    "secondary school teacher",
+    "secondary teacher",
+    "waiter",
+    "waitress",
+    "retail assistant",
+    "store assistant",
+    "shop assistant",
+    "supply teacher",
+]
+
+job_title_group_mapper = {
+    "teaching assistant": "Teaching Assistant",
+    "sen teaching assistant": "Teaching Assistant",
+    "sen teacher assistant": "Teaching Assistant",
+    "primary school teacher": "Primary School Teacher",
+    "primary teacher": "Primary School Teacher",
+    "special needs teacher": "Special Needs Teacher",
+    "sen teacher": "Special Needs Teacher",
+    "secondary school teacher": "Secondary School Teacher",
+    "secondary teacher": "Secondary School Teacher",
+    "waiter": "Waiter",
+    "waitress": "Waiter",
+    "retail assistant": "Retail Assistant",
+    "store assistant": "Retail Assistant",
+    "shop assistant": "Retail Assistant",
+    "supply teacher": "Supply Teacher",
+}
+
+# manually removed headteacher, deputy head or assistant headteacher from occupation titles related to teaching
+relevant_occupations = [
+    "Teacher Assistant",
+    "Primary Teacher",
+    "Design Teacher",
+    "Graduates Teacher",
+    "Art Teacher",
+    "Supply Teachers",
+    "Spanish Teacher",
+    "Education Teacher",
+    "Teacher School",
+    "Secondary Teacher",
+    "Stage Teacher",
+    "Teacher Permanent",
+    "Early Teacher",
+    "Special Teacher",
+    "English Teacher",
+    "Business Teacher",
+    "Maths Teacher",
+    "Teacher Level",
+    "Apprentice Teacher",
+    "History Teacher",
+    "Technology Teacher",
+    "Mathematics Teacher",
+    "Science Teacher",
+    "Teacher Cover",
+    "Nursery Teacher",
+    "Lecturer Teacher",
+    "Humanities Teacher",
+    "Psychology Teacher",
+    "French Teacher",
+    "Music Teacher",
+    "Reception Teacher",
+    "Qualified Teachers",
+    "Economics Teacher",
+    "Teacher Students",
+    "Care Teacher",
+    "Pmld Teacher",
+    "Geography Teacher",
+    "Drama Teacher",
+    "Teacher Tutor",
+    "Intervention Teacher",
+    "Teaching Assistant",
+    "Mfl Teacher",
+    "Studies Teacher",
+    "Preparation Teacher",
+    "Specialist Teacher",
+    "Languages Teacher",
+    "Lower Teacher",
+    "Teacher Programme",
+    "Pupil Teacher",
+    "Teacher Mentor",
+    "Disorders Teacher",
+    "Physics Teacher",
+    "Recruiting Teacher",
+    "Teacher Training",
+    "Materials Teacher",
+    "Teacher Tlr",
+    "P.E Teacher",
+    "Teacher Easter",
+    "Media Teacher",
+    "Worker Teacher",
+    "Computing Teacher",
+    "Sociology Teacher",
+    "Biology Teacher",
+    "Engineering Teacher",
+    "Teacher Coordinator",
+    "Food Teacher",
+    "Booster Teacher",
+    "Teacher Support",
+    "Teach English",
+    "German Teacher",
+    "Teacher Long",
+    "Teach Support",
+    "Teacher Day",
+    "Teacher Performing",
+    "Teacher Open",
+    "Teacher Starting",
+    "Nurse Teacher",
+    "Foundation Teacher",
+    "Teach Science",
+    "Textiles Teacher",
+    "Teacher Outstanding",
+    "Teach Maths",
+]
+
+relevant_knowledge_domains = ["Hospitality And Catering", "Education"]
+
+relevant_parent_sectors = ["Retail", "Education", "Hospitality &amp; Catering"]
+
+relevant_sectors = [
+    "Other Education",
+    "Supply Teacher",
+    "Teaching Assistant",
+    "Other Retail",
+    "Sales Assistant",
+    "Waiting &amp; Bar Staff",
+    "Supply Teacher",
+    "Primary School",
+    "Secondary School",
+    "Special Needs",
+]
+
 
 class RefineRelevantJobs(FlowSpec):
     @step
@@ -133,22 +219,43 @@ class RefineRelevantJobs(FlowSpec):
                 .str.contains("early years")
             )
         ]
+        self.relevant_job_adverts_eyp["sector"] = "Early Years Practitioner"
         print(f"the shape of the EYP data is: {self.relevant_job_adverts_eyp.shape}")
 
-        relevant_job_adverts_sim_occs = self.job_adverts[
-            (self.job_adverts["job_title_raw"].str.lower().isin(all_sim_job_titles))
-            | (self.job_adverts["occupation"].str.lower().isin(occupation_titles))
-            | (
-                self.job_adverts["sector"]
-                .str.lower()
-                .str.contains("teaching assistant")
-            )
+        # 1 -- query job adverts to make sure they are in relevant domains and sectors
+        sim_job_adverts = self.job_adverts[
+            (self.job_adverts["occupation"].isin(relevant_occupations))
+            | (self.job_adverts["knowledge_domain"].isin(relevant_knowledge_domains))
+            | (self.job_adverts["sector"].isin(relevant_sectors))
+            | (self.job_adverts["parent_sector"].isin(relevant_parent_sectors))
         ]
+        sim_job_adverts["clean_job_title"] = sim_job_adverts.job_title_raw.apply(
+            clean_job_title
+        )
 
-        # make sure eyp job ads are not in sim occ jobs
+        # 2 -- query job adverts to make sure they are in relevant job titles
+        for matched_job_title in job_titles_to_match_on:
+            sim_job_adverts.loc[
+                sim_job_adverts.clean_job_title.str.contains(matched_job_title),
+                "matched_job_title",
+            ] = matched_job_title
+
+        # 3 -- tidy up relevant job adverts
+        sim_job_adverts = (
+            sim_job_adverts.query("matched_job_title.notnull()")
+            # clean up sector names with the job title group mapper - we're not really
+            # using sectors, we're just using job titles to compare EYP with.
+            .assign(sector=lambda x: x.matched_job_title.map(job_title_group_mapper))
+            # drop any job titles that have the word 'trainee' or 'aspiring' in
+            .query('clean_job_title.str.contains("trainee") == False').query(
+                'clean_job_title.str.contains("aspiring") == False'
+            )
+        ).reset_index(drop=True)
+
+        # 4 -- make sure eyp job ads are not in sim occ jobs
         eyp_job_ids = self.relevant_job_adverts_eyp.id.astype(str).to_list()
-        self.relevant_job_adverts_sim_occs_no_eyp = relevant_job_adverts_sim_occs[
-            ~relevant_job_adverts_sim_occs.id.astype(str).isin(eyp_job_ids)
+        self.relevant_job_adverts_sim_occs_no_eyp = sim_job_adverts[
+            ~sim_job_adverts.id.astype(str).isin(eyp_job_ids)
         ]
 
         print(

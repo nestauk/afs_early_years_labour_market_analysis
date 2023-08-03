@@ -7,6 +7,7 @@ from spacy.matcher import Matcher
 import re
 import pandas as pd
 
+
 level_dict = {
     "qts": "6",
     "qtse": "6",
@@ -18,10 +19,13 @@ level_dict = {
     "early years professional status": "6",
     "ba": "6",
     "cert": "4",
-    "pgce": "6",
+    "pgce": "7",
     "degree": "6",
     "foundation": "5",
     "foundation degree": "5",
+    "qtls": "5",
+    "eye": "3",
+    "nneb": "3",
 }
 
 london_nuts_3 = [
@@ -72,6 +76,9 @@ patterns = [
     [{"LOWER": "qualified teachers status"}],
     [{"LOWER": "early years teacher status"}],
     [{"LOWER": "early years professional status"}],
+    [{"LOWER": "nneb"}],
+    [{"LOWER": "eye"}],
+    [{"LOWER": "qtls"}],
 ]
 
 nlp = spacy.load("en_core_web_sm")
@@ -102,6 +109,7 @@ def get_qualification_level(job_description: str) -> Union[int, None]:
         qualification_level.extend(numbers)
 
     if qualification_level != []:
+        # return the minimum label
         return min([int(level) for level in qualification_level])
     else:
         return None

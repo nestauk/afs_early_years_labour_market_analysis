@@ -43,6 +43,14 @@ To evaluate this rules based approach, we label 100 randomly sampled (random_see
 | macro avg    | 0.81868   | 0.801087 | 0.808786 | 100     |
 | weighted avg | 0.970889  | 0.96     | 0.964011 | 100     |
 
+To ensure that qualification level 6 job adverts were appropriately extracted, an additional 50 job adverts flagged as '6' where randomly sampled and labelled:
+
+- The overall accuracy of level 6 qualifications was **0.9**;
+- 45/50 job adverts were correctly labelled level 6;
+- Of the 5 incorrectly labelled job adverts, they were wrong as they:
+  1. stated a degree would be desirable but not mandatory;
+  2. added 'QTS' or other level 6 abreviations at the bottom of the job advert text.
+
 ### Qualification level codebook
 
 According to [this guidance on qualifications from the UK government](https://www.gov.uk/government/publications/early-years-qualifications-achieved-in-england), the types of qualifications are as follows:

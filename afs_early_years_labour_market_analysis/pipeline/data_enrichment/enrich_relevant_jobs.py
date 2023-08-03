@@ -22,7 +22,7 @@ class EnrichRelevantJobs(FlowSpec):
     chunk_size = Parameter("chunk_size", help="Chunk size for processing", default=1000)
     # add a boolean parameter to define if flow should be written in production or not
     production = Parameter(
-        "production", help="Run flow in production mode", default=False
+        "production", help="Run flow in production mode", default=True
     )
 
     @step
@@ -214,26 +214,29 @@ class EnrichRelevantJobs(FlowSpec):
     def save_data(self):
         """Save enriched datasets to s3."""
         # save to s3
-        if self.production:
-            self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
-                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
-                index=False,
-            )
-            self.eyp_relevant_skills.to_parquet(
-                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
-                index=False,
-            )
+        self.eyp_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
+            subset=["id"], inplace=True
+        )
+        self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
+            index=False,
+        )
+        self.eyp_relevant_skills.to_parquet(
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
+            index=False,
+        )
 
-            self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
-                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
-                index=False,
-            )
-            self.sim_relevant_skills.to_parquet(
-                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
-                index=False,
-            )
-        else:
-            pass
+        self.sim_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
+            subset=["id"], inplace=True
+        )
+        self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
+            index=False,
+        )
+        self.sim_relevant_skills.to_parquet(
+            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
+            index=False,
+        )
 
         self.next(self.end)
 
