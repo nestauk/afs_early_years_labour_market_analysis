@@ -1,3 +1,16 @@
+# ---
+# jupyter:
+#   jupytext:
+#     cell_metadata_filter: -all
+#     comment_magics: true
+#     formats: py:percent,ipynb
+#     text_representation:
+#       extension: .py
+#       format_name: percent
+#       format_version: '1.3'
+#       jupytext_version: 1.14.5
+# ---
+
 # %% [markdown]
 # This notebook contains the analysis for current staff shortages in early years practitioner job adverts
 # and similar sectors.
@@ -296,7 +309,7 @@ sal_qual_boxplot = au.configure_plots(
     chart_title="Annualised Salary Distribution by EYP Qualification Level",
     chart_subtitle=["The spread in salary across qualification levels is quite large."],
 )
-
+sal_qual_boxplot
 # %%
 # Generate Salary Distribution by Sector Graph
 
@@ -320,6 +333,7 @@ sal_sect_boxplot = au.configure_plots(
         "early years, retail, waiting and teaching assistant roles.",
     ],
 )
+sal_sect_boxplot
 
 # %%
 # Generate Median Salary by Sector Over Time Graph
@@ -379,6 +393,7 @@ sal_sect_ts = au.configure_plots(
         "almost consistently been below England's annual median salary since 2021.",
     ],
 )
+sal_sect_ts
 
 # %% [markdown]
 # ### 2.2 Graphs related to count
@@ -420,6 +435,7 @@ sect_count_ts = au.configure_plots(
         "exception of Teaching Assistants. This may be due to the seasonality of the role.",
     ],
 )
+sect_count_ts
 
 # %% [markdown]
 # ### 2.3 Graphs related to percent change in demand
@@ -496,7 +512,7 @@ loc_changes = au.configure_plots(
 eyp_pc_top_10 = loc_changes.configure_legend(
     labelLimit=500,
 )
-
+eyp_pc_top_10
 # %%
 # Percent Change in Demand by Location and Sector (map)
 
@@ -539,6 +555,7 @@ map_percent_change = au.configure_plots(
         "at two time points. Regions in white indicate not enough data to report.",
     ],
 ).properties(width=500, height=300)
+map_percent_change
 
 # %% [markdown]
 # ### 2.4 Graphs related to skills
@@ -671,3 +688,4 @@ sim_skills = au.configure_plots(
     chart_title="Similarity of EYP Skill Profile to Other Sectors",
     chart_subtitle=[""],
 )
+sim_skills
