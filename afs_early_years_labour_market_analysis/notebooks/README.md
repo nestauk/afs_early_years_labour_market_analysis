@@ -5,7 +5,7 @@ This directory contains the jupyter notebook that analysis both Early Years Prac
 It contains:
 
 - **`ojo_analysis_utils.py`:** Variables and functions to aid in the analysis of job postings;
-- **`ojo_analysis.ipynb`:** The notebook used for analysis. The notebook is split into sections related to:
+- **`ojo_analysis_notebook.py`:** This .py file is an exported notebook used for analysis. The notebook is split into sections related to:
 
   - 1. Data loading and cleaning;
   - 2. Generating tables;
