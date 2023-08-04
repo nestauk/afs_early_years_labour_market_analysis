@@ -1,4 +1,6 @@
-# afs_early_years_labour_market_analysis
+# Analysis of Early Years Job Adverisement Postings
+
+This repo contains the scripts needed to replicate analysis of job postings for Early Years Practitioners.
 
 ## Setup
 
