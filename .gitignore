@@ -1,7 +1,9 @@
 .recipes/
 .cookiecutter/state/
-
 *.lock
+
+#Ignore nuts geo data
+data/*
 
 # Proposed convention
 scratch*

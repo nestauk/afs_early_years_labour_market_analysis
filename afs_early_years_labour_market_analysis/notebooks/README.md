@@ -29,6 +29,12 @@ pip install jupytext #install the converter
 jupytext --set-formats py,ipynb afs_early_years_labour_market_analysis/notebooks/ojo_analysis_notebook.py
 ```
 
+(After running the notebook) to save the report tables locally:
+
+```
+aws s3 cp --recursive s3://afs-early-years-labour-market-analysis/outputs/ojo_analysis/report_tables/ ./data/
+```
+
 ### 3. **`images/`:**
 
 Graphs from the OJO analysis notebook saved in `.png` format.
