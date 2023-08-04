@@ -1,6 +1,10 @@
-# Analysis of Early Years Job Adverisement Postings
+# Analysis of Early Years Job Advertisement Postings
 
 This repo contains the scripts needed to replicate analysis of job postings for Early Years Practitioners.
+
+To **filter and enrich** job adverts from the Open Jobs Observatory, refer to code in `pipeline/data_collection` and `pipeline/data_enrichement`.
+
+To **analyse** enriched, filtered data, refer to the notebook in `notebooks/`.
 
 ## Setup
 
