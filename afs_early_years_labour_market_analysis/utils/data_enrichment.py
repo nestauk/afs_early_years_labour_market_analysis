@@ -109,7 +109,10 @@ def get_qualification_level(job_description: str) -> Union[int, None]:
         qualification_level.extend(numbers)
 
     if qualification_level != []:
-        # return the minimum label
-        return min([int(level) for level in qualification_level])
+        if len(qualification_level) == 1:
+            # return the only label mentioned in the job description
+            return int(qualification_level[0])
+        else:
+            return None
     else:
         return None
