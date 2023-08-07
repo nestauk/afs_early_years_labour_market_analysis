@@ -79,7 +79,6 @@ class EnrichRelevantJobs(FlowSpec):
         ojd_jobs = pd.read_parquet(
             "s3://open-jobs-lake/latest_output_tables/descriptions.parquet"
         )
-
         print("Subsetting OJO job descriptions for EYP relevant job adverts...")
 
         eyp_job_ids = self.relevant_job_adverts_eyp.id.unique()
@@ -153,60 +152,29 @@ class EnrichRelevantJobs(FlowSpec):
         self.next(self.generate_job_description_list)
 
     @step
-    def generate_job_description_list(self):
-        """Generate job description chunks to extract
-        qualification level for EYP-specific job adverts."""
-        import toolz
-
-        print("Generating job description list...")
-        self.eyp_clean_jobs_list = self.eyp_jobs.clean_description.unique().tolist()
-
-        self.eyp_clean_jobs_list = (
-            self.eyp_clean_jobs_list
-            if self.production
-            else self.eyp_clean_jobs_list[: self.chunk_size]
-        )
-
-        self.eyp_chunks = list(
-            toolz.partition_all(self.chunk_size, self.eyp_clean_jobs_list)
-        )
-
-        self.next(self.extract_qualification_level, foreach="eyp_chunks")
-
-    @step
     def extract_qualification_level(self):
-        """Extract qualification levels per job description chunk"""
+        """
+        Extract qualification level per clean job description
+        """
         import afs_early_years_labour_market_analysis.utils.data_enrichment as de
+        from tqdm import tqdm
 
-        print("Extracting qualification levels...")
-        self.clean_job_quals = [
-            de.get_qualification_level(clean_job_desc) for clean_job_desc in self.input
-        ]
+        eyp_clean_jobs_list = self.eyp_jobseyp_jobs.clean_description.unique().tolist()
 
-        self.next(self.join)
+        if self.production:
+            eyp_clean_jobs_list = eyp_clean_jobs_list
+        else:
+            eyp_clean_jobs_list = eyp_clean_jobs_list[:5]
 
-    @step
-    def join(self, inputs):
-        """Join qualification level data to EYP-specific job adverts."""
-        import itertools
+        extracted_qualification_levels = []
+        for clean_job in tqdm(eyp_clean_jobs_list):
+            qual_level = de.get_qualification_level(clean_job)
+            extracted_qualification_levels.append(qual_level)
 
-        qual_list = list(itertools.chain(*[i.clean_job_quals for i in inputs]))
-
-        self.merge_artifacts(inputs, exclude=["clean_job_quals"])
-
-        desc2qual_dict = dict(zip(self.eyp_clean_jobs_list, qual_list))
-
-        id2qual_dict = (
-            self.eyp_jobs.assign(
-                qualification_level=lambda x: x.clean_description.map(desc2qual_dict)
-            )
-            .set_index("id")["qualification_level"]
-            .T.to_dict()
+        desc2qual_dict = dict(zip(eyp_clean_jobs_list, extracted_qualification_levels))
+        self.eyp_jobs["qualification_level"] = self.eyp_jobs.clean_description.map(
+            desc2qual_dict
         )
-
-        self.eyp_enriched_relevant_job_adverts_locmetadata[
-            "qualification_level"
-        ] = self.eyp_enriched_relevant_job_adverts_locmetadata.id.map(id2qual_dict)
 
         self.next(self.save_data)
 
@@ -214,29 +182,33 @@ class EnrichRelevantJobs(FlowSpec):
     def save_data(self):
         """Save enriched datasets to s3."""
         # save to s3
-        self.eyp_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
-            subset=["id"], inplace=True
-        )
-        self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
-            index=False,
-        )
-        self.eyp_relevant_skills.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
-            index=False,
-        )
+        if self.production:
+            self.eyp_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
+                subset=["id"], inplace=True
+            )
+            self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
+                index=False,
+            )
+            self.eyp_relevant_skills.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
+                index=False,
+            )
 
-        self.sim_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
-            subset=["id"], inplace=True
-        )
-        self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
-            index=False,
-        )
-        self.sim_relevant_skills.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
-            index=False,
-        )
+            self.sim_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
+                subset=["id"], inplace=True
+            )
+            self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
+                index=False,
+            )
+            self.sim_relevant_skills.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
+                index=False,
+            )
+
+        else:
+            pass
 
         self.next(self.end)
 
