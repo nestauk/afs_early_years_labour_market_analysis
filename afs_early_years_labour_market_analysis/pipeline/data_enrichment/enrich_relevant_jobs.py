@@ -18,8 +18,6 @@ import pandas as pd
 
 
 class EnrichRelevantJobs(FlowSpec):
-    # add a parameter to specify chunk size
-    chunk_size = Parameter("chunk_size", help="Chunk size for processing", default=1000)
     # add a boolean parameter to define if flow should be written in production or not
     production = Parameter(
         "production", help="Run flow in production mode", default=True
@@ -107,6 +105,12 @@ class EnrichRelevantJobs(FlowSpec):
             .drop(columns=["job_location_raw_x"])
             .rename(columns={"job_location_raw_y": "job_location_raw"})
         )
+        # add clean descriptions here from eyp_jobs by merging the two dataframes on id
+        self.eyp_enriched_relevant_job_adverts = (
+            self.eyp_enriched_relevant_job_adverts.merge(
+                self.eyp_jobs, on="id", how="left"
+            )
+        )
 
         self.sim_enriched_relevant_job_adverts = (
             self.relevant_job_adverts_sim_occ.merge(
@@ -127,6 +131,8 @@ class EnrichRelevantJobs(FlowSpec):
         self.rural_urban_nuts["itl_3_code"] = self.rural_urban_nuts[
             "itl_3_code"
         ].replace(itl_london_codes, "TLI")
+        # this is where the bug was - drop duplicates on itl_3_code
+        self.rural_urban_nuts.drop_duplicates(subset=["itl_3_code"], inplace=True)
 
         self.eyp_enriched_relevant_job_adverts_locmetadata = pd.merge(
             self.eyp_enriched_relevant_job_adverts,
@@ -149,7 +155,7 @@ class EnrichRelevantJobs(FlowSpec):
             self.skills, on="id", how="inner"
         )
 
-        self.next(self.generate_job_description_list)
+        self.next(self.extract_qualification_level)
 
     @step
     def extract_qualification_level(self):
@@ -157,24 +163,30 @@ class EnrichRelevantJobs(FlowSpec):
         Extract qualification level per clean job description
         """
         import afs_early_years_labour_market_analysis.utils.data_enrichment as de
-        from tqdm import tqdm
 
-        eyp_clean_jobs_list = self.eyp_jobseyp_jobs.clean_description.unique().tolist()
+        eyp_clean_jobs_list = (
+            self.eyp_enriched_relevant_job_adverts_locmetadata.query(
+                "~clean_description.isna()"
+            )
+            .clean_description.unique()
+            .tolist()
+        )
 
         if self.production:
             eyp_clean_jobs_list = eyp_clean_jobs_list
         else:
             eyp_clean_jobs_list = eyp_clean_jobs_list[:5]
 
-        extracted_qualification_levels = []
-        for clean_job in tqdm(eyp_clean_jobs_list):
+        desc2qual_dict = {}
+        for i, clean_job in enumerate(eyp_clean_jobs_list):
+            if i % 500 == 0:
+                print(f"Processed {i} jobs of {len(eyp_clean_jobs_list)}...")
             qual_level = de.get_qualification_level(clean_job)
-            extracted_qualification_levels.append(qual_level)
+            desc2qual_dict[clean_job] = qual_level
 
-        desc2qual_dict = dict(zip(eyp_clean_jobs_list, extracted_qualification_levels))
-        self.eyp_jobs["qualification_level"] = self.eyp_jobs.clean_description.map(
-            desc2qual_dict
-        )
+        self.eyp_enriched_relevant_job_adverts_locmetadata[
+            "qualification_level"
+        ] = self.eyp_jobs.clean_description.map(desc2qual_dict)
 
         self.next(self.save_data)
 
@@ -183,9 +195,10 @@ class EnrichRelevantJobs(FlowSpec):
         """Save enriched datasets to s3."""
         # save to s3
         if self.production:
-            self.eyp_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
-                subset=["id"], inplace=True
+            self.eyp_enriched_relevant_job_adverts_locmetadata.drop(
+                columns=["clean_description"], inplace=True
             )
+
             self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
                 "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
                 index=False,
@@ -193,10 +206,6 @@ class EnrichRelevantJobs(FlowSpec):
             self.eyp_relevant_skills.to_parquet(
                 "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
                 index=False,
-            )
-
-            self.sim_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
-                subset=["id"], inplace=True
             )
             self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
                 "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
