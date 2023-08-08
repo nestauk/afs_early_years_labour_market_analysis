@@ -53,6 +53,14 @@ level_dict = {
 }
 
 # load qualification function
+# fix qualification level
+# load qualification function
+from typing import Union
+import spacy
+from spacy.matcher import Matcher
+import re
+import pandas as pd
+
 level_dict = {
     "qts": "6",
     "qtse": "6",
@@ -129,12 +137,7 @@ def get_qualification_level(job_description: str) -> Union[int, None]:
         numbers = re.findall(r"\d+", " ".join(span_text_number))
         qualification_level.extend(numbers)
 
-    # TEST - ONLY RETURN QUALIFICATIONS IF THERE IS ONLY ONE NUMBER
     if qualification_level != []:
-        # if there are multiple numbers, return none
-        if len(qualification_level) > 1:
-            return None
-        else:
-            return int(qualification_level[0])
+        return min(qualification_level)
     else:
         return None

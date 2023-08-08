@@ -141,11 +141,28 @@ class EnrichRelevantJobs(FlowSpec):
             how="left",
         ).drop(columns=["NUTS315CD"])
 
-        print("extracting qualification level for EYP jobs...")
+        print("Extracting qualification level for EYP data...")
+        clean_descs = (
+            self.eyp_enriched_relevant_job_adverts_locmetadata.query(
+                "~clean_description.isna()"
+            )
+            .clean_description.unique()
+            .tolist()
+        )
+        clean_desc2qual = {}
+        for i, desc in enumerate(clean_descs):
+            if i % 500 == 0:
+                print(
+                    "Extracting qualification level for EYP data... {}/{}".format(
+                        i, len(clean_descs)
+                    )
+                )
+            clean_desc2qual[desc] = de.get_qualification_level(desc)
+
         self.eyp_enriched_relevant_job_adverts_locmetadata[
             "qualification_level"
-        ] = self.eyp_enriched_relevant_job_adverts_locmetadata.clean_description.apply(
-            de.get_qualification_level
+        ] = self.eyp_enriched_relevant_job_adverts_locmetadata.clean_description.map(
+            clean_desc2qual
         )
 
         self.sim_enriched_relevant_job_adverts_locmetadata = pd.merge(
