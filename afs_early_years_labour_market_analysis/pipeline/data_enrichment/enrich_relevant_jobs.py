@@ -194,11 +194,11 @@ class EnrichRelevantJobs(FlowSpec):
     def save_data(self):
         """Save enriched datasets to s3."""
         # save to s3
-        if self.production:
-            self.eyp_enriched_relevant_job_adverts_locmetadata.drop(
-                columns=["clean_description"], inplace=True
-            )
+        self.eyp_enriched_relevant_job_adverts_locmetadata.drop(
+            columns=["clean_description"], inplace=True
+        )
 
+        if self.production:
             self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
                 "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
                 index=False,
