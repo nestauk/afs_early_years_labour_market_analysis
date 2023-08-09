@@ -20,7 +20,7 @@ output_table_path = "outputs/ojo_analysis/report_tables/"
 early_date_range = ("2021-07-01", "2022-07-01")
 late_date_range = ("2022-07-01", "2023-07-01")
 
-qual_mapper = {7: 6, 8: 6, 9: 6, 10: 6}
+# for any qualification above 6, map to 6 as everything 6 and above is a degree
 salary_mapper = {"inflation_adj_min_salary": "Min", "inflation_adj_max_salary": "Max"}
 
 clean_salary_mapper = {

@@ -31,36 +31,6 @@ london_nuts_3 = [
     "UKI75",
 ]
 
-
-level_dict = {
-    "qts": "6",
-    "qtse": "6",
-    "eyts": "6",
-    "eyps": "6",
-    "qualified teacher status": "6",
-    "qualified teachers status": "6",
-    "early years teacher status": "6",
-    "early years professional status": "6",
-    "ba": "6",
-    "cert": "4",
-    "pgce": "7",
-    "degree": "6",
-    "foundation": "5",
-    "foundation degree": "5",
-    "qtls": "5",
-    "eye": "3",
-    "nneb": "3",
-}
-
-# load qualification function
-# fix qualification level
-# load qualification function
-from typing import Union
-import spacy
-from spacy.matcher import Matcher
-import re
-import pandas as pd
-
 level_dict = {
     "qts": "6",
     "qtse": "6",
@@ -138,6 +108,12 @@ def get_qualification_level(job_description: str) -> Union[int, None]:
         qualification_level.extend(numbers)
 
     if qualification_level != []:
-        return min(qualification_level)
+        # just extract qualification levels for
+        # where there is only 1 qualification level mentioned
+        # to ensure we are not overestimating salaries
+        if len(qualification_level) == 1:
+            return qualification_level[0]
+        else:
+            return None
     else:
         return None
