@@ -121,7 +121,9 @@ for col in sal_cols:
 eyp_jobs_clean = (
     all_jobs_clean.query("sector == 'Early Years Practitioner'")
     # make sure qualifications are only up to level 6
-    .query("qualification_level <= '6'").reset_index(drop=True)
+    .query("qualification_level <= '6' | qualification_level.isna()").reset_index(
+        drop=True
+    )
 )
 
 sim_jobs_clean = all_jobs_clean.query(
