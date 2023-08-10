@@ -2,9 +2,9 @@
 
 This folder contains the scripts used to enrich the OJO data used in the analysis.
 
-## Enrichment steps
+## Enrichment Steps
 
-We enrich OJO data by adding:
+This script enriches OJO data by adding:
 
 - locations;
 - salaries;
@@ -27,7 +27,7 @@ We take a pattern matching approach to extracting the **minimum** qualification 
 1. **Identify spans** that comply with a series of pattern based rules;
 2. **Convert qualifications** that are not numbered (i.e. degree levels) to numbers as described in `level_dict`
 3. **Extract numbers** from flagged, converted spans;
-4. **Pick the minimum** qualification level number.
+4. **Return qualification levels** where a job advert mentions a single qualification. We do this so as not to skew the salary distribution for different qualification levels.
 
 To evaluate this rules based approach, we label 100 randomly sampled (random_seed=42) EYP job adverts with qualifications extracted. The overall accuracy is **0.96**.
 

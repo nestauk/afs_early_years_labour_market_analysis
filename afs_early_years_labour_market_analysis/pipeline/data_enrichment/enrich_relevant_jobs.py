@@ -18,13 +18,6 @@ import pandas as pd
 
 
 class EnrichRelevantJobs(FlowSpec):
-    # add a parameter to specify chunk size
-    chunk_size = Parameter("chunk_size", help="Chunk size for processing", default=1000)
-    # add a boolean parameter to define if flow should be written in production or not
-    production = Parameter(
-        "production", help="Run flow in production mode", default=True
-    )
-
     @step
     def start(self):
         """Start the flow."""
@@ -79,7 +72,6 @@ class EnrichRelevantJobs(FlowSpec):
         ojd_jobs = pd.read_parquet(
             "s3://open-jobs-lake/latest_output_tables/descriptions.parquet"
         )
-
         print("Subsetting OJO job descriptions for EYP relevant job adverts...")
 
         eyp_job_ids = self.relevant_job_adverts_eyp.id.unique()
@@ -90,14 +82,15 @@ class EnrichRelevantJobs(FlowSpec):
             .drop(columns=["description"])
         )
 
-        self.next(self.add_location_salaries)
+        self.next(self.enrich_data)
 
     @step
-    def add_location_salaries(self):
-        """Add location and salary data to relevant job adverts."""
+    def enrich_data(self):
+        """Add location, salary and qualification levels to relevant job adverts."""
         import afs_early_years_labour_market_analysis.utils.data_enrichment as de
 
         print("Adding location and salaries information...")
+        print("adding itl code and salary information for EYP jobs...")
         self.eyp_enriched_relevant_job_adverts = (
             self.relevant_job_adverts_eyp.merge(
                 self.salaries,
@@ -108,7 +101,14 @@ class EnrichRelevantJobs(FlowSpec):
             .drop(columns=["job_location_raw_x"])
             .rename(columns={"job_location_raw_y": "job_location_raw"})
         )
-
+        # add clean descriptions here from eyp_jobs by merging the two dataframes on id
+        print("adding clean descriptions for EYP jobs...")
+        self.eyp_enriched_relevant_job_adverts = (
+            self.eyp_enriched_relevant_job_adverts.merge(
+                self.eyp_jobs, on="id", how="left"
+            )
+        )
+        print("adding itl code and salary information for similar jobs...")
         self.sim_enriched_relevant_job_adverts = (
             self.relevant_job_adverts_sim_occ.merge(
                 self.salaries,
@@ -121,6 +121,9 @@ class EnrichRelevantJobs(FlowSpec):
         )
 
         # replace old nuts 3 codes for london to merged TL code
+        print(
+            "adding rural/urban classification information for EYP and similar jobs..."
+        )
         itl_london_codes = self.rural_urban_nuts[
             self.rural_urban_nuts["NUTS315CD"].isin(de.london_nuts_3)
         ]["itl_3_code"].to_list()
@@ -128,6 +131,8 @@ class EnrichRelevantJobs(FlowSpec):
         self.rural_urban_nuts["itl_3_code"] = self.rural_urban_nuts[
             "itl_3_code"
         ].replace(itl_london_codes, "TLI")
+        # this is where the bug was - drop duplicates on itl_3_code
+        self.rural_urban_nuts.drop_duplicates(subset=["itl_3_code"], inplace=True)
 
         self.eyp_enriched_relevant_job_adverts_locmetadata = pd.merge(
             self.eyp_enriched_relevant_job_adverts,
@@ -136,12 +141,38 @@ class EnrichRelevantJobs(FlowSpec):
             how="left",
         ).drop(columns=["NUTS315CD"])
 
+        print("Extracting qualification level for EYP data...")
+        clean_descs = (
+            self.eyp_enriched_relevant_job_adverts_locmetadata.query(
+                "~clean_description.isna()"
+            )
+            .clean_description.unique()
+            .tolist()
+        )
+        clean_desc2qual = {}
+        for i, desc in enumerate(clean_descs):
+            if i % 500 == 0:
+                print(
+                    "Extracting qualification level for EYP data... {}/{}".format(
+                        i, len(clean_descs)
+                    )
+                )
+            clean_desc2qual[desc] = de.get_qualification_level(desc)
+
+        self.eyp_enriched_relevant_job_adverts_locmetadata[
+            "qualification_level"
+        ] = self.eyp_enriched_relevant_job_adverts_locmetadata.clean_description.map(
+            clean_desc2qual
+        )
+
         self.sim_enriched_relevant_job_adverts_locmetadata = pd.merge(
             self.sim_enriched_relevant_job_adverts,
             self.rural_urban_nuts,
             on="itl_3_code",
             how="left",
         ).drop(columns=["NUTS315CD"])
+
+        print("getting skills for EYP and similar jobs...")
 
         self.eyp_relevant_skills = self.relevant_job_adverts_eyp[["id"]].merge(
             self.skills, on="id", how="inner"
@@ -150,63 +181,7 @@ class EnrichRelevantJobs(FlowSpec):
             self.skills, on="id", how="inner"
         )
 
-        self.next(self.generate_job_description_list)
-
-    @step
-    def generate_job_description_list(self):
-        """Generate job description chunks to extract
-        qualification level for EYP-specific job adverts."""
-        import toolz
-
-        print("Generating job description list...")
-        self.eyp_clean_jobs_list = self.eyp_jobs.clean_description.unique().tolist()
-
-        self.eyp_clean_jobs_list = (
-            self.eyp_clean_jobs_list
-            if self.production
-            else self.eyp_clean_jobs_list[: self.chunk_size]
-        )
-
-        self.eyp_chunks = list(
-            toolz.partition_all(self.chunk_size, self.eyp_clean_jobs_list)
-        )
-
-        self.next(self.extract_qualification_level, foreach="eyp_chunks")
-
-    @step
-    def extract_qualification_level(self):
-        """Extract qualification levels per job description chunk"""
-        import afs_early_years_labour_market_analysis.utils.data_enrichment as de
-
-        print("Extracting qualification levels...")
-        self.clean_job_quals = [
-            de.get_qualification_level(clean_job_desc) for clean_job_desc in self.input
-        ]
-
-        self.next(self.join)
-
-    @step
-    def join(self, inputs):
-        """Join qualification level data to EYP-specific job adverts."""
-        import itertools
-
-        qual_list = list(itertools.chain(*[i.clean_job_quals for i in inputs]))
-
-        self.merge_artifacts(inputs, exclude=["clean_job_quals"])
-
-        desc2qual_dict = dict(zip(self.eyp_clean_jobs_list, qual_list))
-
-        id2qual_dict = (
-            self.eyp_jobs.assign(
-                qualification_level=lambda x: x.clean_description.map(desc2qual_dict)
-            )
-            .set_index("id")["qualification_level"]
-            .T.to_dict()
-        )
-
-        self.eyp_enriched_relevant_job_adverts_locmetadata[
-            "qualification_level"
-        ] = self.eyp_enriched_relevant_job_adverts_locmetadata.id.map(id2qual_dict)
+        print("enrichment complete!")
 
         self.next(self.save_data)
 
@@ -214,29 +189,31 @@ class EnrichRelevantJobs(FlowSpec):
     def save_data(self):
         """Save enriched datasets to s3."""
         # save to s3
-        self.eyp_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
-            subset=["id"], inplace=True
-        )
-        self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
-            index=False,
-        )
-        self.eyp_relevant_skills.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
-            index=False,
+        self.eyp_enriched_relevant_job_adverts_locmetadata.drop(
+            columns=["clean_description"], inplace=True
         )
 
-        self.sim_enriched_relevant_job_adverts_locmetadata.drop_duplicates(
-            subset=["id"], inplace=True
-        )
-        self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
-            index=False,
-        )
-        self.sim_relevant_skills.to_parquet(
-            "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
-            index=False,
-        )
+        if self.production:
+            print("saving data...")
+            self.eyp_enriched_relevant_job_adverts_locmetadata.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_eyp.parquet",
+                index=False,
+            )
+            self.eyp_relevant_skills.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_eyp.parquet",
+                index=False,
+            )
+            self.sim_enriched_relevant_job_adverts_locmetadata.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/enriched_relevant_job_adverts_sim_occs.parquet",
+                index=False,
+            )
+            self.sim_relevant_skills.to_parquet(
+                "s3://afs-early-years-labour-market-analysis/inputs/ojd_daps_extract/relevant_skills_sim_occs.parquet",
+                index=False,
+            )
+
+        else:
+            pass
 
         self.next(self.end)
 
