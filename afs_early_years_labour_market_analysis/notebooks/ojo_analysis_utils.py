@@ -190,37 +190,37 @@ def generate_boxplot(
 
 def get_skill_similarity_scores(all_skills: pd.DataFrame) -> List[Dict[str, float]]:
     """Calculates the cosine similarity between the skill count
-        vectors of an EYP and other sectors.
+        vectors of an EYP and other professions.
 
     Args:
         all_skills (pd.DataFrame): DataFrame of all skills
 
     Returns:
-        List[Dict[str, float]]: List of dictionaries containing the sector and
+        List[Dict[str, float]]: List of dictionaries containing the profession and
             skill profile similarity score (cosine similarity)
     """
-    # create count vectors of skills for each sector
+    # create count vectors of skills for each profession
     esco_id_2_id = all_skills.set_index("esco_id").esco_label.to_dict()
-    sector_skill_dict = dict()
-    for sector, skills in all_skills.groupby("sector"):
+    profession_skill_dict = dict()
+    for profession, skills in all_skills.groupby("profession"):
         skill_count = dict(Counter(skills.esco_id))
         for skill_id, indx in esco_id_2_id.items():
             if not skill_count.get(skill_id):
                 skill_count[skill_id] = 0
         # sort the dictionary by skill id
         skill_count = dict(sorted(skill_count.items(), key=lambda item: item[0]))
-        sector_skill_dict[sector] = skill_count
+        profession_skill_dict[profession] = skill_count
 
-    # calculate cosine similarity between EYP and other sector skill count vectors
-    eyp_count_vector = list(sector_skill_dict["Early Years Practitioner"].values())
-    sector_sim = []
-    for sector, skill_count in sector_skill_dict.items():
-        if sector != "Early Years Practitioner":
+    # calculate cosine similarity between EYP and other profession skill count vectors
+    eyp_count_vector = list(profession_skill_dict["Early Years Practitioner"].values())
+    profession_sim = []
+    for profession, skill_count in profession_skill_dict.items():
+        if profession != "Early Years Practitioner":
             count_vector = list(skill_count.values())
             # calculate cosine similarity
             cosine_sim = cosine_similarity([eyp_count_vector], [count_vector])
-            sector_sim.append(
-                {"sector": sector, "skill_profile_similarity": cosine_sim}
+            profession_sim.append(
+                {"profession": profession, "skill_profile_similarity": cosine_sim}
             )
 
-    return sector_sim
+    return profession_sim

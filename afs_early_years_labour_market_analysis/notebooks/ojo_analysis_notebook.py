@@ -1,28 +1,16 @@
-# ---
-# jupyter:
-#   jupytext:
-#     cell_metadata_filter: -all
-#     comment_magics: true
-#     formats: py,ipynb
-#     text_representation:
-#       extension: .py
-#       format_name: light
-#       format_version: '1.5'
-#       jupytext_version: 1.14.5
-#   kernelspec:
-#     display_name: dap_prinz_green_jobs
-#     language: python
-#     name: python3
-# ---
+#!/usr/bin/env python
+# coding: utf-8
 
 # This notebook contains the analysis for current staff shortages in early years practitioner job adverts
-# and similar sectors.
+# and similar professions.
 #
 # Demand is proxied by:
 # - percent change in # of job adverts;
 # - change in salaries.
 
-# +
+# In[2]:
+
+
 # import relevant libraries
 import afs_early_years_labour_market_analysis.getters.ojd_daps as od
 import afs_early_years_labour_market_analysis.analysis.analysis_utils as au
@@ -40,10 +28,13 @@ import geopandas as gpd
 
 from colour import Color
 
-# -
+
+# In[3]:
+
 
 # disable max rows for altair graphs
 alt.data_transformers.disable_max_rows()
+
 
 # This notebook contains the graphs needed to expore the current staff shortage based on relevant online job adverts.
 #
@@ -57,7 +48,9 @@ alt.data_transformers.disable_max_rows()
 # Concatenate:
 # - both datasets in order to clean the data
 
-# +
+# In[4]:
+
+
 # 0.1 Load datasets
 
 # First, load in Early Year Practitioner (EYP) and similar job adverts
@@ -65,12 +58,12 @@ eyp_jobs = od.get_eyp_relevant_enriched_job_adverts()
 sim_jobs = od.get_similar_enriched_job_adverts()
 
 # concatenate the two dataframes then clean up the data
-all_jobs = pd.concat([eyp_jobs, sim_jobs])
+all_jobs = pd.concat([eyp_jobs, sim_jobs]).rename(columns={"sector": "profession"})
 
 # Load in skills data
 eyp_skills = od.get_eyp_relevant_skills()
 sim_skills = od.get_similar_skills()
-# -
+
 
 # ### 0.2 Clean up the datasets
 # Clean up all job adverts by:
@@ -82,8 +75,18 @@ sim_skills = od.get_similar_skills()
 # - accounting for inflation by converting all salaries to March 2023 prices;
 # - splitting cleaned data into two additional dataframes: one for clean EYP adverts and one for clean similar adverts.
 
-# +
+# In[5]:
+
+
 # 0.2 Clean up the dataset
+
+professions_to_include = [
+    "Early Years Practitioner",
+    "Primary School Teacher",
+    "Secondary School Teacher",
+    "Retail Assistant",
+    "Waiter",
+]
 
 all_jobs_clean = (
     all_jobs.drop_duplicates(subset=["location", "job_title_raw", "created"])
@@ -97,6 +100,7 @@ all_jobs_clean = (
     # flag whether in england or not
     .assign(england_geo=lambda x: x["itl_3_code"].apply(oau.is_england_geo))
     .query("england_geo == True")
+    .query("profession in @professions_to_include")
     .drop(columns=["is_large_geo", "england_geo"])
 )
 
@@ -119,7 +123,7 @@ for col in sal_cols:
 # Now that we have cleaned up the data, we can re-split it into EYP and similar jobs
 # for future analysis
 eyp_jobs_clean = (
-    all_jobs_clean.query("sector == 'Early Years Practitioner'")
+    all_jobs_clean.query("profession == 'Early Years Practitioner'")
     # make sure qualifications are only up to level 6
     .query("qualification_level <= '6' | qualification_level.isna()").reset_index(
         drop=True
@@ -127,25 +131,27 @@ eyp_jobs_clean = (
 )
 
 sim_jobs_clean = all_jobs_clean.query(
-    "sector != 'Early Years Practitioner'"
+    "profession != 'Early Years Practitioner'"
 ).reset_index(drop=True)
 
 # Clean up skills data
-id_2_sector_mapper = all_jobs_clean.set_index("id").sector.to_dict()
+id_2_profession_mapper = all_jobs_clean.set_index("id").profession.to_dict()
 all_skills = pd.concat([eyp_skills, sim_skills])
-all_skills["sector"] = all_skills.id.map(id_2_sector_mapper)
-all_skills.dropna(subset=["sector"], inplace=True)
-# -
+all_skills["profession"] = all_skills.id.map(id_2_profession_mapper)
+all_skills.dropna(subset=["profession"], inplace=True)
+
 
 # ## 1. Generate tables for report
 #
 # Print figures to state in the report and save tables to s3 that are relevant for the report.
 
-# +
+# In[6]:
+
+
 # Print figures to include in the report
 
 print(
-    f"there are {len(eyp_jobs_clean)} job adverts in the EYP sector in England between {eyp_jobs_clean.created.min()} and {eyp_jobs_clean.created.max()}"
+    f"there are {len(eyp_jobs_clean)} job adverts in the EYP profession in England between {eyp_jobs_clean.created.min()} and {eyp_jobs_clean.created.max()}"
 )
 print("")
 print(
@@ -168,17 +174,23 @@ low_sal = eyp_jobs_clean[eyp_jobs_clean.inflation_adj_max_salary < 15000]
 print(
     f"{len(low_sal)} or {round((len(low_sal)/len(eyp_jobs_clean))*100, 2)}% of jobs pay less than £15,000 per year"
 )
-# -
 
-# Print the number of jobs by 'sector'
-for sector, sector_info in all_jobs.groupby("sector"):
-    print(f"there are {len(sector_info)} jobs in the {sector} sector")
 
-# +
-# Median annualised salary and advertisement count per sector table
+# In[7]:
 
-median_salary_sector = (
-    all_jobs_clean.groupby("sector")
+
+# Print the number of jobs by 'profession'
+for profession, profession_info in all_jobs_clean.groupby("profession"):
+    print(f"there are {len(profession_info)} jobs in the {profession} profession")
+
+
+# In[8]:
+
+
+# Median annualised salary and advertisement count per profession table
+
+median_salary_profession = (
+    all_jobs_clean.groupby("profession")
     .agg(
         {
             "id": "count",
@@ -192,25 +204,28 @@ median_salary_sector = (
             "inflation_adj_min_salary": "Median Minimum Annualised Salary (£, March 2023 prices)",
             "inflation_adj_max_salary": "Median Maximum Annualised Salary (£, March 2023 prices)",
             "id": "Number of Job Adverts",
-            "sector": "Sector",
+            "profession": "Profession",
         }
     )
 )
 
 # save table to s3
-median_salary_sector = median_salary_sector.astype(
+median_salary_profession = median_salary_profession.astype(
     {
         "Median Minimum Annualised Salary (£, March 2023 prices)": "int",
         "Median Maximum Annualised Salary (£, March 2023 prices)": "int",
     }
 )
 
-median_salary_sector_path = os.path.join(
-    oau.output_table_path, "median_salary_count_per_sector.csv"
+median_salary_profession_path = os.path.join(
+    oau.output_table_path, "median_salary_count_per_profession.csv"
 )
-save_to_s3(BUCKET_NAME, median_salary_sector, median_salary_sector_path)
+save_to_s3(BUCKET_NAME, median_salary_profession, median_salary_profession_path)
 
-# +
+
+# In[9]:
+
+
 # Median annualised salary per qualification level table
 
 median_salary_qualification = (
@@ -228,7 +243,7 @@ median_salary_qualification = (
             "inflation_adj_min_salary": "Median Minimum Annualised Salary (£, March 2023 prices)",
             "inflation_adj_max_salary": "Median Maximum Annualised Salary (£, March 2023 prices)",
             "id": "Number of Job Adverts",
-            "sector": "Sector",
+            "profession": "Profession",
         }
     )
 )
@@ -238,11 +253,14 @@ median_salary_qualification_path = os.path.join(
 )
 save_to_s3(BUCKET_NAME, median_salary_qualification, median_salary_qualification_path)
 
-# +
-# Top 10 most common job titles per sector table
+
+# In[10]:
+
+
+# Top 10 most common job titles per profession table
 
 top_10_titles = (
-    all_jobs_clean.groupby("sector")
+    all_jobs_clean.groupby("profession")
     .agg({"job_title_raw": "value_counts"})
     .rename(columns={"job_title_raw": "count"})
     .groupby(level=0)
@@ -251,56 +269,27 @@ top_10_titles = (
     .rename(columns={"job_title_raw": "job_title"})
 )
 
-top_10_titles_path = os.path.join(oau.output_table_path, "top_10_titles_per_sector.csv")
+top_10_titles_path = os.path.join(
+    oau.output_table_path, "top_10_titles_per_profession.csv"
+)
 save_to_s3(BUCKET_NAME, top_10_titles, top_10_titles_path)
 
-# +
-# Percent difference in the # of job adverts per sector table
-# (Per laura's request)
-
-early_df = all_jobs_clean.query(
-    "created.between(@oau.early_date_range[0], @oau.early_date_range[1])"
-)
-late_df = all_jobs_clean.query(
-    "created.between(@oau.late_date_range[0], @oau.late_date_range[1])"
-)
-
-sector_count = pd.merge(
-    early_df.groupby("sector")
-    .size()
-    .reset_index(name="count")
-    .sort_values(by="count", ascending=False),
-    late_df.groupby("sector")
-    .size()
-    .reset_index(name="count")
-    .sort_values(by="count", ascending=False),
-    on="sector",
-    suffixes=("_early", "_late"),
-)
-
-sector_percent_change = sector_count.assign(
-    difference=lambda x: x.count_late - x.count_early
-).assign(percent_change=lambda x: (x.difference / x.count_early) * 100)
-
-sector_percent_change_path = os.path.join(
-    oau.output_table_path, "percent_change_sector.csv"
-)
-save_to_s3(BUCKET_NAME, sector_percent_change, sector_percent_change_path)
-# -
 
 # ## 2. Generate Graphs
 #
 # ### 2.1 Graphs related to salaries
 #
 # Generate:
-# - boxplots by qualification level and sector
-# - salary timeseries by sector with median England wage line
+# - boxplots by qualification level and profession
+# - salary timeseries by profession with median England wage line
 
-# +
+# In[11]:
+
+
 # Generate Salary Distribution by Qualification Level Graph
 
 box_plot_df = eyp_jobs_clean.query('itl_3_name != "London"').melt(
-    id_vars=["sector", "qualification_level"],
+    id_vars=["profession", "qualification_level"],
     value_vars=["inflation_adj_min_salary", "inflation_adj_max_salary"],
     var_name="salary_type",
     value_name="salary",
@@ -322,9 +311,11 @@ sal_qual_boxplot = au.configure_plots(
 
 sal_qual_boxplot
 
-# +
-# Generate Wage Ratio Graph
 
+# In[12]:
+
+
+# Generate Wage Ratio Graph
 
 eyp_jobs_clean_no_london = eyp_jobs_clean.query('itl_3_name != "London"')
 eyp_jobs_clean["min_wage_ratio"] = (
@@ -396,36 +387,42 @@ au.configure_plots(
     ],
 )
 
-# +
-# Generate Salary Distribution by Sector Graph
+
+# In[13]:
+
+
+# Generate Salary Distribution by profession Graph
 
 box_plot_df = all_jobs_clean.query('itl_3_name != "London"').melt(
-    id_vars=["sector"],
+    id_vars=["profession"],
     value_vars=["inflation_adj_min_salary", "inflation_adj_max_salary"],
     var_name="salary_type",
     value_name="salary",
 )
 box_plot_df = box_plot_df.assign(
     salary_type=lambda x: x.salary_type.replace(oau.salary_mapper)
-).rename(columns={"sector": "Sector"})
+).rename(columns={"profession": "profession"})
 
-box_plot_graph = oau.generate_boxplot(box_plot_df, "Sector", 4)
+box_plot_graph = oau.generate_boxplot(box_plot_df, "profession", 5)
 
 sal_sect_boxplot = au.configure_plots(
     box_plot_graph,
-    chart_title="Annualised Salary Distribution by Sector",
+    chart_title="Annualised Salary Distribution by Profession",
     chart_subtitle=[
-        "The spread in salary varies by sector. Salaries appear most consistant in",
+        "The spread in salary varies by profession. Salaries appear most consistant in",
         "early years, retail, waiting and teaching assistant roles.",
     ],
 )
 
 sal_sect_boxplot
 
-# +
-# Generate Median Salary by Sector Over Time Graph
-monthly_sector_sal_count = (
-    all_jobs_clean.groupby(["sector", "month_year"])
+
+# In[14]:
+
+
+# Generate Median Salary by profession Over Time Graph
+monthly_profession_sal_count = (
+    all_jobs_clean.groupby(["profession", "month_year"])
     .agg({"inflation_adj_min_salary": "median", "inflation_adj_max_salary": "median"})
     .reset_index()
     .rename(
@@ -436,8 +433,8 @@ monthly_sector_sal_count = (
     )
 )
 
-monthly_sector_sal_count_melt = monthly_sector_sal_count.melt(
-    id_vars=["sector", "month_year"],
+monthly_profession_sal_count_melt = monthly_profession_sal_count.melt(
+    id_vars=["profession", "month_year"],
     value_vars=[
         "Median Minimum Annualised Salary (£)",
         "Median Maximum Annualised Salary (£)",
@@ -445,14 +442,14 @@ monthly_sector_sal_count_melt = monthly_sector_sal_count.melt(
     var_name="salary_type",
     value_name="salary",
 )
-monthly_sector_sal_count_melt.salary_type = (
-    monthly_sector_sal_count_melt.salary_type.map(oau.clean_salary_mapper)
+monthly_profession_sal_count_melt.salary_type = (
+    monthly_profession_sal_count_melt.salary_type.map(oau.clean_salary_mapper)
 )
 # Current 2023 median salary for England
-monthly_sector_sal_count_melt["median_salary"] = 29588
+monthly_profession_sal_count_melt["median_salary"] = 29588
 
 salary_ts = (
-    alt.Chart(monthly_sector_sal_count_melt)
+    alt.Chart(monthly_profession_sal_count_melt)
     .mark_line()
     .encode(
         x=alt.X("month_year:T", title="Date"),
@@ -463,18 +460,18 @@ salary_ts = (
 
 # add pattern to median line
 median_wage_line = (
-    alt.Chart(monthly_sector_sal_count_melt)
+    alt.Chart(monthly_profession_sal_count_melt)
     .mark_rule(color="black", strokeDash=[1, 1])
     .encode(y="median_salary")
 )
 
-median_wage_sector = alt.layer(
-    salary_ts, median_wage_line, data=monthly_sector_sal_count_melt
-).facet("sector", columns=4)
+median_wage_profession = alt.layer(
+    salary_ts, median_wage_line, data=monthly_profession_sal_count_melt
+).facet("profession", columns=5)
 
 sal_sect_ts = au.configure_plots(
-    median_wage_sector,
-    chart_title="Median Annualised Salary by Sector Over Time",
+    median_wage_profession,
+    chart_title="Median Annualised Salary by Profession Over Time",
     chart_subtitle=[
         "Salaries for Early Year Practitioners, Retail Assistants and Waiters have",
         "almost consistently been below England's annual median salary since 2021.",
@@ -482,176 +479,73 @@ sal_sect_ts = au.configure_plots(
 )
 
 sal_sect_ts
-# -
+
 
 # ### 2.2 Graphs related to count
 #
 # Generate:
-# - monthly rolling average timeseries by sector
+# - monthly rolling average timeseries by profession
 
-# +
-# Generate Rolling Average of Job Adverts Over time by Sector Graph
+# In[15]:
 
-sector_count_created = (
-    all_jobs_clean.groupby(["sector", "created"]).size().reset_index(name="count")
+
+# Generate Rolling Average of Job Adverts Over time by profession Graph
+
+profession_count_created = (
+    all_jobs_clean.groupby(["profession", "created"]).size().reset_index(name="count")
 )
 
-sector_count_created["created"] = pd.to_datetime(sector_count_created["created"])
+profession_count_created["created"] = pd.to_datetime(
+    profession_count_created["created"]
+)
 # Set 'created' as the index to use resample
-sector_count_created.set_index("created", inplace=True)
+profession_count_created.set_index("created", inplace=True)
 
-# Calculate rolling mean per sector
+# Calculate rolling mean per profession
 monthly_mean = (
-    sector_count_created.groupby("sector")["count"].rolling("30D").mean().reset_index()
+    profession_count_created.groupby("profession")["count"]
+    .rolling("30D")
+    .mean()
+    .reset_index()
 )
 
-rolling_avg_sector = (
+rolling_avg_profession = (
     alt.Chart(monthly_mean)
     .mark_line()
     .encode(
         x=alt.X("created:T", title="Date"),
         y=alt.Y(f"count:Q", title="Rolling Monthly Average"),
-        color=alt.Color("sector", legend=None),
+        color=alt.Color("profession", legend=None),
     )
-).facet("sector", columns=4, title=None)
+).facet("profession", columns=5, title=None)
 
 sect_count_ts = au.configure_plots(
-    rolling_avg_sector,
-    chart_title="Rolling Monthly Average # of Job Adverts per Sector",
+    rolling_avg_profession,
+    chart_title="Rolling Monthly Average # of Job Adverts per Profession",
     chart_subtitle=[
-        "There appears to be consistant demand across most sectors over time with the",
+        "There appears to be consistant demand across most professions over time with the",
         "exception of Teaching Assistants. This may be due to the seasonality of the role.",
     ],
 )
 
 sect_count_ts
-# -
 
-# ### 2.3 Graphs related to percent change in demand
+
+# ### 2.3 Graphs related to skills
 #
 # Generate:
-# - Percent change in demand by location (chart)
-# - Percent change in demand by location and sector (map)
+# - a graph on professions with the most similar skill profile
+# - top skills at skill level for each profession
 
-# +
-# Create a dataframe with the number of job adverts per month per sector and percent change from early to late period
+# In[16]:
 
-early_df_percent = (
-    early_df.groupby(["itl_3_name", "sector"])
-    .size()
-    # make sure size is above 10
-    .reset_index(name="count")
-    .query("count > 10")
-)
 
-late_df_percent = (
-    late_df.groupby(["itl_3_name", "sector"])
-    .size()
-    # make sure size is above 10
-    .reset_index(name="count")
-    .query("count > 10")
-)
-
-percent_change_df = pd.merge(
-    early_df_percent,
-    late_df_percent,
-    on=["itl_3_name", "sector"],
-    suffixes=("_early", "_late"),
-)
-percent_change_df = (
-    percent_change_df.assign(difference=lambda x: abs(x.count_early - x.count_late))
-    .assign(percent_change=lambda x: abs((x.difference / x.count_early) * 100))
-    .assign(decline=lambda x: x.count_early > x.count_late)
-)
-
-# +
-# Top 10 Locations By Percent Change in # of Job Adverts for EYP Graph
-
-colors = [au.NESTA_COLOURS[0], au.NESTA_COLOURS[1]]
-
-loc_changes = (
-    alt.Chart(
-        percent_change_df.query('sector == "Early Years Practitioner"')
-        .sort_values(by="percent_change", ascending=False)
-        .head(10)
-    )
-    .mark_circle()
-    .encode(
-        x=alt.X("percent_change", title="# of Job Adverts Percent Change (%)"),
-        y=alt.Y(
-            "itl_3_name", title="Location", sort=None, axis=alt.Axis(labelLimit=5000)
-        ),
-        size=alt.Size(
-            "difference",
-            title=["Difference in", "Job Advert #"],
-        ),
-        color=alt.Color("decline", title="Decline", scale=alt.Scale(range=colors)),
-    )
-    .properties(width=500, height=300)
-)
-loc_changes = au.configure_plots(
-    loc_changes,
-    chart_title="The Top Locations with the Largest Percentage Change in EYP Job Adverts",
-    chart_subtitle=[
-        "The size of the circle represents the difference in the number of job adverts between 2021-2022",
-        "while the color indicates whether the percent change is a decline or not.",
-    ],
-)
-
-eyp_pc_top_10 = loc_changes.configure_legend(
-    labelLimit=500,
-)
-
-# +
-# Percent Change in Demand by Location: EYP (Map)
-
-nuts_geo_data = oau.get_nuts_geo_data()
-percent_change_geo_df = pd.merge(
-    percent_change_df, nuts_geo_data, left_on="itl_3_name", right_on="NUTS_NAME"
-)
-# convert percent change to an absolute value given the 'decline' column
-percent_change_geo_df.loc[
-    percent_change_geo_df["decline"] == True, "percent_change"
-] = (percent_change_geo_df["percent_change"] * -1)
-
-# convert percent change to a category
-percent_change_geo_df = gpd.GeoDataFrame(percent_change_geo_df, geometry="geometry")
-
-map_percent_change = (
-    alt.Chart(percent_change_geo_df.query('sector == "Early Years Practitioner"'))
-    .mark_geoshape(stroke="white", color="black")
-    .encode(
-        color=alt.Color(
-            "decline",
-            title="In Decline?",
-            legend=alt.Legend(orient="bottom", direction="horizontal"),
-        )
-    )
-)
-
-# change size of map and add title/subtitle
-au.configure_plots(
-    map_percent_change,
-    chart_title="Percent Change in EYP Demand",
-    chart_subtitle=[
-        "Demand is defined as the percent change in the number of online job postings",
-        "at two time points. Regions in white indicate not enough data to report.",
-    ],
-).properties(width=500, height=300)
-# -
-
-# ### 2.4 Graphs related to skills
-#
-# Generate:
-# - a graph on sectors with the most similar skill profile
-
-# +
 # Calculate and get skill similarity scores based on the cosine similarity of
-# skill count vectors between EYP and other sectors
-sector_sim = oau.get_skill_similarity_scores(all_skills)
+# skill count vectors between EYP and other professions
+profession_sim = oau.get_skill_similarity_scores(all_skills)
 
 skill_profile_sims = (
-    pd.DataFrame(sector_sim)
+    pd.DataFrame(profession_sim)
     .sort_values(by="skill_profile_similarity", ascending=False)
     .reset_index(drop=True)
 )
@@ -659,8 +553,11 @@ skill_profile_sims[
     "skill_profile_similarity"
 ] = skill_profile_sims.skill_profile_similarity.apply(lambda x: round(x[0][0], 2))
 
-# +
-# Generate Similarity of EYP Skill Profile to Other Sectors Graph
+
+# In[18]:
+
+
+# Generate Similarity of EYP Skill Profile to Other professions Graph
 
 most_similar_color = Color("red")
 least_similar_color = Color("green")
@@ -671,23 +568,23 @@ similarity_colors = {
     )
 }
 
-similar_sectors_text = pd.DataFrame(
+similar_professions_text = pd.DataFrame(
     {"x": [0] * 4 + [1] * 4, "y": list(range(4, 0, -1)) + list(range(4, 0, -1))}
 )
-similar_sectors_text = similar_sectors_text[:-1]
-similar_sectors_text_sim = pd.merge(
-    skill_profile_sims, similar_sectors_text, left_index=True, right_index=True
+similar_professions_text = similar_professions_text[:-1]
+similar_professions_text_sim = pd.merge(
+    skill_profile_sims, similar_professions_text, left_index=True, right_index=True
 )
 
-similar_sectors_text_sim["skill_profile_similarity_approx"] = round(
-    similar_sectors_text_sim.skill_profile_similarity, 1
+similar_professions_text_sim["skill_profile_similarity_approx"] = round(
+    similar_professions_text_sim.skill_profile_similarity, 1
 )
-similar_sectors_text_sim[
+similar_professions_text_sim[
     "color"
-] = similar_sectors_text_sim.skill_profile_similarity_approx.map(similarity_colors)
+] = similar_professions_text_sim.skill_profile_similarity_approx.map(similarity_colors)
 
 base = (
-    alt.Chart(similar_sectors_text_sim)
+    alt.Chart(similar_professions_text_sim)
     .mark_circle()
     .encode(
         x=alt.X("x", axis=None),
@@ -704,7 +601,7 @@ text = base.mark_text(
     y="y",
     # alt size value of 10
     size=alt.SizeValue(14),
-    text="sector",
+    text="profession",
 )
 
 score = base.mark_text(
@@ -717,7 +614,7 @@ score = base.mark_text(
     text="skill_profile_similarity",
 )
 
-similar_sectors_colors = pd.DataFrame(
+similar_professions_colors = pd.DataFrame(
     {
         "x": [0, 0, 0, 0],
         "y": [0, 0, 0, 0],
@@ -732,7 +629,7 @@ similar_sectors_colors = pd.DataFrame(
 )
 
 legend_chart = (
-    alt.Chart(similar_sectors_colors)
+    alt.Chart(similar_professions_colors)
     .mark_circle(size=0)
     .encode(
         x=alt.X("x", title="", axis=None),
@@ -743,16 +640,16 @@ legend_chart = (
                 domain=list(
                     dict(
                         zip(
-                            similar_sectors_colors["Skill Profile Similarity"],
-                            similar_sectors_colors["color"],
+                            similar_professions_colors["Skill Profile Similarity"],
+                            similar_professions_colors["color"],
                         )
                     ).keys()
                 ),
                 range=list(
                     dict(
                         zip(
-                            similar_sectors_colors["Skill Profile Similarity"],
-                            similar_sectors_colors["color"],
+                            similar_professions_colors["Skill Profile Similarity"],
+                            similar_professions_colors["color"],
                         )
                     ).values()
                 ),
@@ -767,55 +664,61 @@ base_text_legend = base_text | legend_chart
 
 sim_skills = au.configure_plots(
     base_text_legend,
-    chart_title="Similarity of EYP Skill Profile to Other Sectors",
+    chart_title="Similarity of EYP Skill Profile to Other Professions",
     chart_subtitle=[""],
 )
 sim_skills
 
-# +
+
+# In[20]:
+
+
 # Generate top skills at the skill level for all jobs
 
 skill2name_mapper = all_skills.set_index("esco_id").esco_label.to_dict()
 all_skills_count = (
     all_skills.query("esco_id.str.len() > 10")
-    .groupby(["sector", "esco_id"])
+    .groupby(["profession", "esco_id"])
     .size()
     .reset_index()
     .rename(columns={0: "count"})
 )
 
-top_skills_per_sector = []
-for sector, sector_info in all_skills_count.groupby("sector"):
-    sector_info["job_ad_percent"] = (
-        sector_info["count"] / all_skills.query(f"sector == '{sector}'").id.nunique()
+top_skills_per_profession = []
+for profession, profession_info in all_skills_count.groupby("profession"):
+    profession_info["job_ad_percent"] = (
+        profession_info["count"]
+        / all_skills.query(f"profession == '{profession}'").id.nunique()
     ) * 100
-    top_skills_count = sector_info.sort_values(
+    top_skills_count = profession_info.sort_values(
         by="job_ad_percent", ascending=False
     ).head(10)
-    top_skills_per_sector.append(top_skills_count)
-top_skills_per_sector_df = pd.concat(top_skills_per_sector).reset_index(drop=True)
-top_skills_per_sector_df["esco_label"] = top_skills_per_sector_df.esco_id.map(
+    top_skills_per_profession.append(top_skills_count)
+top_skills_per_profession_df = pd.concat(top_skills_per_profession).reset_index(
+    drop=True
+)
+top_skills_per_profession_df["esco_label"] = top_skills_per_profession_df.esco_id.map(
     skill2name_mapper
 )
 
-# create flag for whether the skill is in the top 10 EYP skills for the sector
-top_skills_per_sector_df["in_eyp_top_skills"] = top_skills_per_sector_df.apply(
+# create flag for whether the skill is in the top 10 EYP skills for the profession
+top_skills_per_profession_df["in_eyp_top_skills"] = top_skills_per_profession_df.apply(
     lambda x: True
     if x.esco_label
-    in top_skills_per_sector_df[
-        top_skills_per_sector_df.sector == "Early Years Practitioner"
+    in top_skills_per_profession_df[
+        top_skills_per_profession_df.profession == "Early Years Practitioner"
     ].esco_label.unique()
     else False,
     axis=1,
 )
 
 charts = []
-sectors = top_skills_per_sector_df.sector.unique()
-for i in range(len(sectors)):
+professions = top_skills_per_profession_df.profession.unique()
+for i in range(len(professions)):
     bar_chart = (
         alt.Chart(
-            top_skills_per_sector_df.query(f"sector == '{sectors[i]}'"),
-            title=f"Top Skills for {sectors[i]}",
+            top_skills_per_profession_df.query(f"profession == '{professions[i]}'"),
+            title=f"Top Skills for {professions[i]}",
         )
         .mark_bar()
         .encode(
@@ -835,14 +738,14 @@ for i in range(len(sectors)):
     )
     charts.append(bar_chart)
 
-top_skills_barchart = alt.vconcat(*charts[:4]) | alt.vconcat(*charts[4:])
+top_skills_barchart = alt.vconcat(*charts[:3]) | alt.vconcat(*charts[3:])
 
 au.configure_plots(
     top_skills_barchart,
-    chart_title="Top Skills in Each Sector",
+    chart_title="Top Skills in Each Profession",
     chart_subtitle=[
         " ",
-        "There are overlaps in the top skills across all sectors.",
+        "There are overlaps in the top skills across all professions.",
         " ",
     ],
 )
