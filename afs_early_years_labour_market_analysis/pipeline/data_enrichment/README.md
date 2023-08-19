@@ -149,11 +149,11 @@ According to [this guidance on qualifications from the UK government](https://ww
 
 This script cleans up the enriched OJO data by:
 
-    - dropping sectors that are no longer relevant;
-    - accomodating for inflation;
-    - dropping duplicates;
-    - dropping jobs that were created before April 2021;
-    - cleans up skills data.
+- dropping sectors that are no longer relevant;
+- accomodating for inflation;
+- dropping duplicates;
+- dropping jobs that were created before April 2021;
+- cleans up skills data.
 
 ```bash
 python clean_relevant_jobs.py
