@@ -20,12 +20,10 @@
 
 # +
 # import relevant libraries
-import afs_early_years_labour_market_analysis.getters.ojd_daps as od
 import afs_early_years_labour_market_analysis.analysis.analysis_utils as au
 from afs_early_years_labour_market_analysis import BUCKET_NAME, PROJECT_DIR
 from afs_early_years_labour_market_analysis.getters.data_getters import save_to_s3
 from afs_early_years_labour_market_analysis.pipeline.data_enrichment.clean_relevant_jobs import *
-from colour import Color
 
 import pandas as pd
 import altair as alt
