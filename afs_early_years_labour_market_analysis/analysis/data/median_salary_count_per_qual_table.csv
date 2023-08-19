@@ -1,0 +1,17 @@
+qualification_level,nation,id,inflation_adj_min_salary,inflation_adj_max_salary
+1.0,England,45,21206.004999999997,25359.025
+2.0,England,1091,20267.58,24081.63
+2.0,Northern Ireland,2,,
+2.0,Scotland,1,43346.94,66295.32
+2.0,Wales,8,21248.5,25498.2
+3.0,England,4398,23515.01,26454.38
+3.0,Northern Ireland,1,,
+3.0,Scotland,4,28500.37,32002.42
+3.0,Wales,51,25607.17,25607.17
+4.0,England,18,32921.01,34390.7
+5.0,England,16,35959.0,40849.94
+5.0,Northern Ireland,1,,
+5.0,Wales,1,,
+6.0,England,1130,30569.51,41080.43
+6.0,Scotland,4,28570.73,30804.66
+6.0,Wales,23,18341.71,21248.5

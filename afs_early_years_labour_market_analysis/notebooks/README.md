@@ -15,12 +15,11 @@ This .py file is an exported notebook used for analysis. It is best to review it
 The notebook is split into sections related to:
 
 - 1. Data loading and cleaning;
-- 2. Generating tables;
-- 3. Generating graphs
+- 2. Printing facts and figures;
+- 3. Generating graphs:
   - 3.1 Graphs related to salaries;
   - 3.2 Graphs related to count of job adverts;
-  - 3.3 Graphs related to percent change on demand;
-  - 3.4 Graphs related to skills
+  - 3.3 Graphs related to skills
 
 To review it as a notebook:
 

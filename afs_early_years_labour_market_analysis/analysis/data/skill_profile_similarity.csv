@@ -1,0 +1,14 @@
+nation,profession,skill_profile_similarity
+England,Primary School Teacher,0.69
+England,Retail Assistant,0.32
+England,Secondary School Teacher,0.6
+England,Waiter,0.48
+Wales,Primary School Teacher,0.65
+Wales,Retail Assistant,0.15
+Wales,Secondary School Teacher,0.53
+Wales,Waiter,0.24
+Scotland,Primary School Teacher,0.17
+Scotland,Retail Assistant,0.17
+Scotland,Secondary School Teacher,0.26
+Scotland,Waiter,0.24
+Northern Ireland,Retail Assistant,0.03
