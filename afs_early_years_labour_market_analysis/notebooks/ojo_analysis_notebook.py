@@ -15,12 +15,6 @@
 #     name: python3
 # ---
 
-import sys
-
-sys.path.append(
-    "/Users/india.kerlenesta/Projects/afs_early_years_labour_market_analysis"
-)
-
 # This notebook contains the analysis for current staff shortages in early years practitioner job adverts
 # and similar professions.
 
