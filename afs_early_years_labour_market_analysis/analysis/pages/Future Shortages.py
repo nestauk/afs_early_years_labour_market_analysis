@@ -1,9 +1,3 @@
-import sys
-
-sys.path.append(
-    "/Users/india.kerlenesta/Projects/afs_early_years_labour_market_analysis"
-)
-
 import streamlit as st
 import os
 from pathlib import Path
