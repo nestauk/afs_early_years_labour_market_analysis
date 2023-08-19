@@ -161,7 +161,7 @@ python clean_relevant_jobs.py
 
 ## 3. `filter_relevant_jobs.py`
 
-This script creates a series of summary tables saved to `analysis/data` for the purpose of generating streamlit graphs.
+This script creates a series of summary tables saved to `analysis/data` for the purpose of generating streamlit graphs. You will need to run this script if you want to run the streamlit app or OJO analysis notebook.
 
 ```bash
 python filter_relevant_jobs.py
