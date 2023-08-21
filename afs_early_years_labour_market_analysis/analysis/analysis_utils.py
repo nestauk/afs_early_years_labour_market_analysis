@@ -160,7 +160,7 @@ def generate_boxplot(
             alt.Y(
                 "salary:Q", title="Annualised Salary (£)", scale=alt.Scale(zero=False)
             ),
-            alt.X("salary_type:N", title="Salary Type"),
+            alt.X("salary_type:N", title=""),
             alt.Color("salary_type:N", title="Salary Type"),
         )
         .properties(width=175, height=200)
