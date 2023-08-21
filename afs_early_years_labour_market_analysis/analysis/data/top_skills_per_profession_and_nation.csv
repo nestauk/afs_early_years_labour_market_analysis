@@ -1,0 +1,156 @@
+profession,esco_id,nation,count,job_ad_percent,esco_label,in_eyp_top_skills
+Early Years Practitioner,22b7d99d-252f-4572-8e3c-438ea87607eb,England,6886,25.681572371610784,show positive attitude,True
+Early Years Practitioner,15d76317-c71a-4fa2-aadc-2ecc34e627b7,England,3562,13.284600753365904,communication,True
+Early Years Practitioner,cab119c5-ff95-4499-b91a-54e9f6c5cde1,England,3117,11.624958042740461,work in team,True
+Early Years Practitioner,995ad47c-bfc5-45fd-91ec-35cad3f7d368,England,2398,8.943422966471488,contribute to the safeguarding of children,True
+Early Years Practitioner,f8d4a24c-fb62-444e-9525-7aa5662f440d,England,1918,7.153246559504718,take care of children,True
+Early Years Practitioner,1f1d2ff8-c4c1-45cc-9812-6a7ee84a73cb,England,1394,5.198970648565994,leading a team,True
+Early Years Practitioner,6b58a6d2-89cf-4ab5-bb62-eb29ae968934,England,1316,4.908066982433894,perform activities to learn with children,True
+Early Years Practitioner,efe801a5-8704-4def-8a96-c32f7a6cb9fb,England,1277,4.762615149367844,maintain relations with children's parents,True
+Early Years Practitioner,c44fb412-b830-425e-9371-5451780fa973,England,1261,4.702942602468951,provide safeguarding to individuals,True
+Early Years Practitioner,1258cc12-37bb-4a12-b219-9c3d6b294533,England,1248,4.654458658113601,show organisational abilities,True
+Early Years Practitioner,f8d4a24c-fb62-444e-9525-7aa5662f440d,Northern Ireland,4,44.44444444444444,take care of children,True
+Early Years Practitioner,df329d70-87b0-466b-a214-3431f36e2a5e,Northern Ireland,4,44.44444444444444,protect personal data,True
+Early Years Practitioner,4f7b14d8-f09c-49f7-abae-231e8c210e07,Northern Ireland,4,44.44444444444444,general medicine,True
+Early Years Practitioner,efe801a5-8704-4def-8a96-c32f7a6cb9fb,Northern Ireland,4,44.44444444444444,maintain relations with children's parents,True
+Early Years Practitioner,906c9e66-bdee-4f8e-93d7-88d9fcf39a0a,Northern Ireland,4,44.44444444444444,schedule meetings,True
+Early Years Practitioner,4e2ce047-1912-468f-8c04-ab7374c4a761,Northern Ireland,3,33.33333333333333,support diversity of cultures,True
+Early Years Practitioner,ab89ad86-1098-44bb-9465-05af5624557c,Northern Ireland,3,33.33333333333333,escort people,True
+Early Years Practitioner,3fd2467a-59d1-4e5e-b3cf-5cb423362a1a,Northern Ireland,2,22.22222222222222,develop young persons programmes,True
+Early Years Practitioner,4a874516-eb34-4dc1-833d-864c5a448db2,Northern Ireland,2,22.22222222222222,support the positiveness of children,True
+Early Years Practitioner,f2d63656-169c-4110-99fe-33914f902466,Northern Ireland,2,22.22222222222222,child-protection,True
+Early Years Practitioner,22b7d99d-252f-4572-8e3c-438ea87607eb,Scotland,39,46.42857142857143,show positive attitude,True
+Early Years Practitioner,7ee872de-db39-4ae3-8e19-75d1a2cdf697,Scotland,24,28.57142857142857,establish curriculum,True
+Early Years Practitioner,995ad47c-bfc5-45fd-91ec-35cad3f7d368,Scotland,17,20.238095238095237,contribute to the safeguarding of children,True
+Early Years Practitioner,cab119c5-ff95-4499-b91a-54e9f6c5cde1,Scotland,16,19.047619047619047,work in team,True
+Early Years Practitioner,15d76317-c71a-4fa2-aadc-2ecc34e627b7,Scotland,16,19.047619047619047,communication,True
+Early Years Practitioner,93a68dcb-3dc6-4dbe-b196-f6d212228a50,Scotland,13,15.476190476190476,promote health and safety,True
+Early Years Practitioner,1f1d2ff8-c4c1-45cc-9812-6a7ee84a73cb,Scotland,11,13.095238095238097,leading a team,True
+Early Years Practitioner,b32e593b-cc7f-4f38-bf50-e69431ec7ada,Scotland,10,11.904761904761903,present examples of teaching experience,True
+Early Years Practitioner,7110bf9f-b245-4adc-9159-5081013fd64d,Scotland,10,11.904761904761903,"communicate effectively with patients, families and caregivers",True
+Early Years Practitioner,a65fb963-6faf-47b2-a3d9-c4e5e4d833c5,Scotland,8,9.523809523809524,support children's resilience,True
+Early Years Practitioner,22b7d99d-252f-4572-8e3c-438ea87607eb,Wales,83,24.34017595307918,show positive attitude,True
+Early Years Practitioner,604fa3e6-bc8d-423e-b7e8-c0ba2416eaa4,Wales,49,14.369501466275661,manage patterns of psychological behaviour,True
+Early Years Practitioner,a4fd17bf-6309-47c5-b7fa-ae5560673acf,Wales,48,14.076246334310852,establish safeguarding threats,True
+Early Years Practitioner,25e16679-a7d0-464d-916c-63210001bbab,Wales,37,10.850439882697946,be reliable,True
+Early Years Practitioner,995ad47c-bfc5-45fd-91ec-35cad3f7d368,Wales,36,10.557184750733137,contribute to the safeguarding of children,True
+Early Years Practitioner,cb668e89-6ef5-4ff3-ab4a-506010e7e70b,Wales,34,9.970674486803519,managing a team,True
+Early Years Practitioner,15d76317-c71a-4fa2-aadc-2ecc34e627b7,Wales,31,9.090909090909092,communication,True
+Early Years Practitioner,728ad40d-4a79-4b4d-b77b-a48d094d73fa,Wales,20,5.865102639296188,assess training programme,True
+Early Years Practitioner,185647bf-e101-4080-9a40-09173d7eefd0,Wales,17,4.9853372434017595,be fluent in Welsh,True
+Early Years Practitioner,f8d4a24c-fb62-444e-9525-7aa5662f440d,Wales,17,4.9853372434017595,take care of children,True
+Primary School Teacher,22b7d99d-252f-4572-8e3c-438ea87607eb,England,2902,23.973564642709626,show positive attitude,True
+Primary School Teacher,7ee872de-db39-4ae3-8e19-75d1a2cdf697,England,1432,11.829822387443205,establish curriculum,True
+Primary School Teacher,cedd0710-62ae-4ff4-89ae-ac52375f86ec,England,1102,9.103676166873193,performs classroom management,False
+Primary School Teacher,15d76317-c71a-4fa2-aadc-2ecc34e627b7,England,986,8.145394465097066,communication,True
+Primary School Teacher,bd420d08-880b-43bc-a808-d46ad3115168,England,810,6.691449814126393,lesson plan sugestions,False
+Primary School Teacher,cab119c5-ff95-4499-b91a-54e9f6c5cde1,England,743,6.137959520859149,work in team,True
+Primary School Teacher,ebfe7b18-1fad-463f-9509-8ef1a5736045,England,705,5.8240396530359355,be flexible,False
+Primary School Teacher,1258cc12-37bb-4a12-b219-9c3d6b294533,England,616,5.088806278397357,show organisational abilities,True
+Primary School Teacher,c44fb412-b830-425e-9371-5451780fa973,England,579,4.7831474597273855,provide safeguarding to individuals,True
+Primary School Teacher,a0cad388-3c4c-4786-b238-fc39f8c495af,England,542,4.477488641057414,confidence,False
+Primary School Teacher,22b7d99d-252f-4572-8e3c-438ea87607eb,Wales,89,35.45816733067729,show positive attitude,True
+Primary School Teacher,bd420d08-880b-43bc-a808-d46ad3115168,Wales,26,10.358565737051793,lesson plan sugestions,False
+Primary School Teacher,185647bf-e101-4080-9a40-09173d7eefd0,Wales,26,10.358565737051793,be fluent in Welsh,True
+Primary School Teacher,7ee872de-db39-4ae3-8e19-75d1a2cdf697,Wales,25,9.9601593625498,establish curriculum,True
+Primary School Teacher,6d56955d-2b6c-471f-890d-8c17ab16053b,Wales,23,9.163346613545817,communicate efficiently and effectively,False
+Primary School Teacher,5a42eaf5-93bb-4bca-8ebd-4d78e96e4929,Wales,21,8.366533864541832,maintain students' discipline,False
+Primary School Teacher,995ad47c-bfc5-45fd-91ec-35cad3f7d368,Wales,20,7.968127490039841,contribute to the safeguarding of children,True
+Primary School Teacher,113b4428-0a31-4199-8496-070af7854b91,Wales,19,7.569721115537849,show commitment,False
+Primary School Teacher,20f57a7f-b90e-4403-8c77-5ddd89b5835b,Wales,16,6.374501992031872,preparing lesson content,False
+Primary School Teacher,cedd0710-62ae-4ff4-89ae-ac52375f86ec,Wales,16,6.374501992031872,performs classroom management,False
+Retail Assistant,7e9daad3-8604-4839-af9b-dc6f8db3ef68,England,1185,33.2398316970547,stocking shelves,False
+Retail Assistant,f7f56b20-8f05-4731-a1bf-79fdcffc72ce,England,1103,30.93969144460028,check deliveries on receipt,False
+Retail Assistant,704fda1b-cd0a-40fe-99fc-0a24250a2010,England,1081,30.32258064516129,provide customer care,False
+Retail Assistant,87cadd76-4e3a-47e5-b66d-559fbc1e8993,England,1062,29.789621318373072,responding to enquiries,False
+Retail Assistant,15a33d76-4640-438d-ae64-fdc0c1d3eebc,England,946,26.53576437587658,customer service,False
+Retail Assistant,22b7d99d-252f-4572-8e3c-438ea87607eb,England,776,21.7671809256662,show positive attitude,True
+Retail Assistant,15d76317-c71a-4fa2-aadc-2ecc34e627b7,England,676,18.962131837307155,communication,True
+Retail Assistant,cab119c5-ff95-4499-b91a-54e9f6c5cde1,England,468,13.127629733520338,work in team,True
+Retail Assistant,8330c86e-63cf-4be6-849f-4f77628cc5c5,England,388,10.8835904628331,ensure satisfied customers,False
+Retail Assistant,1f1d2ff8-c4c1-45cc-9812-6a7ee84a73cb,England,386,10.82748948106592,leading a team,True
+Retail Assistant,cab119c5-ff95-4499-b91a-54e9f6c5cde1,Northern Ireland,10,41.66666666666667,work in team,True
+Retail Assistant,22b7d99d-252f-4572-8e3c-438ea87607eb,Northern Ireland,8,33.33333333333333,show positive attitude,True
+Retail Assistant,a15dab55-f1da-4f85-ae3e-2b5c5b5333ca,Northern Ireland,6,25.0,aim to provide high quality customer service,False
+Retail Assistant,fb1bae44-1ca4-4937-84e1-4abef47bf584,Northern Ireland,5,20.833333333333336,arrange mail deliveries,False
+Retail Assistant,e4b6f863-fa9f-4fe7-a984-f948f8c90d24,Northern Ireland,5,20.833333333333336,handle cash flows,False
+Retail Assistant,045f71e6-0699-4169-8a54-9c6b96f3174d,Northern Ireland,5,20.833333333333336,guide,False
+Retail Assistant,fa01d9a8-34ee-497f-a8ac-27726695a14d,Northern Ireland,5,20.833333333333336,help customers on motor vehicles,False
+Retail Assistant,15a33d76-4640-438d-ae64-fdc0c1d3eebc,Northern Ireland,5,20.833333333333336,customer service,False
+Retail Assistant,e2088cd0-b174-468a-adc0-921efdadb337,Northern Ireland,4,16.666666666666664,sign languages,False
+Retail Assistant,8330c86e-63cf-4be6-849f-4f77628cc5c5,Northern Ireland,4,16.666666666666664,ensure satisfied customers,False
+Retail Assistant,f7f56b20-8f05-4731-a1bf-79fdcffc72ce,Scotland,216,55.95854922279793,check deliveries on receipt,False
+Retail Assistant,7e9daad3-8604-4839-af9b-dc6f8db3ef68,Scotland,215,55.69948186528497,stocking shelves,False
+Retail Assistant,704fda1b-cd0a-40fe-99fc-0a24250a2010,Scotland,213,55.181347150259064,provide customer care,False
+Retail Assistant,87cadd76-4e3a-47e5-b66d-559fbc1e8993,Scotland,213,55.181347150259064,responding to enquiries,False
+Retail Assistant,22b7d99d-252f-4572-8e3c-438ea87607eb,Scotland,79,20.466321243523318,show positive attitude,True
+Retail Assistant,15a33d76-4640-438d-ae64-fdc0c1d3eebc,Scotland,55,14.248704663212436,customer service,False
+Retail Assistant,cab119c5-ff95-4499-b91a-54e9f6c5cde1,Scotland,43,11.139896373056994,work in team,True
+Retail Assistant,1f1d2ff8-c4c1-45cc-9812-6a7ee84a73cb,Scotland,38,9.844559585492227,leading a team,True
+Retail Assistant,15d76317-c71a-4fa2-aadc-2ecc34e627b7,Scotland,37,9.585492227979273,communication,True
+Retail Assistant,1258cc12-37bb-4a12-b219-9c3d6b294533,Scotland,30,7.772020725388601,show organisational abilities,True
+Retail Assistant,704fda1b-cd0a-40fe-99fc-0a24250a2010,Wales,93,47.93814432989691,provide customer care,False
+Retail Assistant,7e9daad3-8604-4839-af9b-dc6f8db3ef68,Wales,93,47.93814432989691,stocking shelves,False
+Retail Assistant,f7f56b20-8f05-4731-a1bf-79fdcffc72ce,Wales,91,46.90721649484536,check deliveries on receipt,False
+Retail Assistant,87cadd76-4e3a-47e5-b66d-559fbc1e8993,Wales,91,46.90721649484536,responding to enquiries,False
+Retail Assistant,22b7d99d-252f-4572-8e3c-438ea87607eb,Wales,38,19.587628865979383,show positive attitude,True
+Retail Assistant,15d76317-c71a-4fa2-aadc-2ecc34e627b7,Wales,31,15.979381443298967,communication,True
+Retail Assistant,8330c86e-63cf-4be6-849f-4f77628cc5c5,Wales,24,12.371134020618557,ensure satisfied customers,False
+Retail Assistant,15a33d76-4640-438d-ae64-fdc0c1d3eebc,Wales,23,11.855670103092782,customer service,False
+Retail Assistant,05fc6f8d-639c-4329-a6de-dfdd800ed091,Wales,20,10.309278350515463,customers insight,False
+Retail Assistant,75dfe1ee-5935-42ce-b820-697f827825c3,Wales,19,9.793814432989691,provide customer service,False
+Secondary School Teacher,22b7d99d-252f-4572-8e3c-438ea87607eb,England,639,32.93814432989691,show positive attitude,True
+Secondary School Teacher,cedd0710-62ae-4ff4-89ae-ac52375f86ec,England,392,20.20618556701031,performs classroom management,False
+Secondary School Teacher,c44fb412-b830-425e-9371-5451780fa973,England,217,11.18556701030928,provide safeguarding to individuals,True
+Secondary School Teacher,15d76317-c71a-4fa2-aadc-2ecc34e627b7,England,212,10.927835051546392,communication,True
+Secondary School Teacher,ebfe7b18-1fad-463f-9509-8ef1a5736045,England,143,7.371134020618557,be flexible,False
+Secondary School Teacher,15a33d76-4640-438d-ae64-fdc0c1d3eebc,England,127,6.54639175257732,customer service,False
+Secondary School Teacher,f7940b22-764a-43f0-9642-f60f5897109b,England,108,5.567010309278351,support students,False
+Secondary School Teacher,5cd1930c-278d-4929-b413-27352f5b3687,England,103,5.309278350515464,cope with uncertainty,False
+Secondary School Teacher,e2d44a9b-f28c-489e-9861-b654b5ded507,England,102,5.257731958762887,motivate others,False
+Secondary School Teacher,7ee872de-db39-4ae3-8e19-75d1a2cdf697,England,89,4.587628865979381,establish curriculum,True
+Secondary School Teacher,18d39e12-b7f5-4426-8b84-afd3d43af20e,Scotland,2,100.0,arrange bookings,False
+Secondary School Teacher,22b7d99d-252f-4572-8e3c-438ea87607eb,Scotland,2,100.0,show positive attitude,True
+Secondary School Teacher,5cd1930c-278d-4929-b413-27352f5b3687,Scotland,2,100.0,cope with uncertainty,False
+Secondary School Teacher,cedd0710-62ae-4ff4-89ae-ac52375f86ec,Scotland,2,100.0,performs classroom management,False
+Secondary School Teacher,dbeb6d2c-3ec0-42b6-afe1-aa04ce0cee81,Scotland,2,100.0,drive fast,False
+Secondary School Teacher,a4fd17bf-6309-47c5-b7fa-ae5560673acf,Wales,43,41.34615384615385,establish safeguarding threats,True
+Secondary School Teacher,604fa3e6-bc8d-423e-b7e8-c0ba2416eaa4,Wales,43,41.34615384615385,manage patterns of psychological behaviour,True
+Secondary School Teacher,728ad40d-4a79-4b4d-b77b-a48d094d73fa,Wales,36,34.61538461538461,assess training programme,True
+Secondary School Teacher,22b7d99d-252f-4572-8e3c-438ea87607eb,Wales,26,25.0,show positive attitude,True
+Secondary School Teacher,25e16679-a7d0-464d-916c-63210001bbab,Wales,25,24.03846153846154,be reliable,True
+Secondary School Teacher,cedd0710-62ae-4ff4-89ae-ac52375f86ec,Wales,19,18.269230769230766,performs classroom management,False
+Secondary School Teacher,a13566a2-4461-4dcc-82b2-8280fb5bb993,Wales,11,10.576923076923077,providing teacher support,False
+Secondary School Teacher,f7940b22-764a-43f0-9642-f60f5897109b,Wales,11,10.576923076923077,support students,False
+Secondary School Teacher,7935deb6-0bed-4e38-985e-1f83b8e16940,Wales,10,9.615384615384617,do training sessions,False
+Secondary School Teacher,573d3f91-c81c-407e-a56d-0f3a63272b43,Wales,10,9.615384615384617,adapts teaching to student's capabilities,False
+Waiter,22b7d99d-252f-4572-8e3c-438ea87607eb,England,469,23.6272040302267,show positive attitude,True
+Waiter,15d76317-c71a-4fa2-aadc-2ecc34e627b7,England,408,20.554156171284635,communication,True
+Waiter,15a33d76-4640-438d-ae64-fdc0c1d3eebc,England,314,15.818639798488665,customer service,False
+Waiter,cab119c5-ff95-4499-b91a-54e9f6c5cde1,England,235,11.838790931989925,work in team,True
+Waiter,83e6510b-ffeb-4aec-959c-4265fd0ff7b7,England,186,9.370277078085643,use IT tools,False
+Waiter,a0cad388-3c4c-4786-b238-fc39f8c495af,England,181,9.118387909319898,confidence,False
+Waiter,75dfe1ee-5935-42ce-b820-697f827825c3,England,169,8.513853904282117,provide customer service,False
+Waiter,7e5786f8-1174-4f75-97e3-cfecfd95d797,England,165,8.312342569269521,provide outstanding service,False
+Waiter,a8460be3-f4ba-44a0-a961-0389069a3614,England,136,6.851385390428212,cope with fast-paced situations,False
+Waiter,1258cc12-37bb-4a12-b219-9c3d6b294533,England,135,6.801007556675064,show organisational abilities,True
+Waiter,a7f0fbe0-c546-4f30-8e41-34a58c64567e,Scotland,20,31.746031746031743,data storage,False
+Waiter,22b7d99d-252f-4572-8e3c-438ea87607eb,Scotland,7,11.11111111111111,show positive attitude,True
+Waiter,7e5786f8-1174-4f75-97e3-cfecfd95d797,Scotland,5,7.936507936507936,provide outstanding service,False
+Waiter,15a33d76-4640-438d-ae64-fdc0c1d3eebc,Scotland,5,7.936507936507936,customer service,False
+Waiter,cab119c5-ff95-4499-b91a-54e9f6c5cde1,Scotland,4,6.349206349206349,work in team,True
+Waiter,a0cad388-3c4c-4786-b238-fc39f8c495af,Scotland,4,6.349206349206349,confidence,False
+Waiter,26a6e6d2-1c9a-4d7e-8c04-5ba16d1f53da,Scotland,4,6.349206349206349,welcome customers,False
+Waiter,25e16679-a7d0-464d-916c-63210001bbab,Scotland,3,4.761904761904762,be reliable,True
+Waiter,cb15ece1-2afd-488c-852d-0b52c13409ef,Scotland,2,3.1746031746031744,focus on serving,False
+Waiter,64ff8d5f-58a8-4efb-af5a-e161854b3e9a,Scotland,2,3.1746031746031744,understand spoken English,False
+Waiter,a7f0fbe0-c546-4f30-8e41-34a58c64567e,Wales,15,40.54054054054054,data storage,False
+Waiter,15a33d76-4640-438d-ae64-fdc0c1d3eebc,Wales,11,29.72972972972973,customer service,False
+Waiter,22b7d99d-252f-4572-8e3c-438ea87607eb,Wales,11,29.72972972972973,show positive attitude,True
+Waiter,83e6510b-ffeb-4aec-959c-4265fd0ff7b7,Wales,4,10.81081081081081,use IT tools,False
+Waiter,1258cc12-37bb-4a12-b219-9c3d6b294533,Wales,4,10.81081081081081,show organisational abilities,True
+Waiter,7a147904-22b3-498a-b4d9-7bceeb86b45d,Wales,4,10.81081081081081,work under pressure,False
+Waiter,0b144726-21c2-46ed-8d13-c03d27f61604,Wales,3,8.108108108108109,perform multi tasks at the same time,False
+Waiter,c55caed2-de9e-4a25-819e-a0b0e83fba1b,Wales,3,8.108108108108109,convey live presentation,False
+Waiter,a8460be3-f4ba-44a0-a961-0389069a3614,Wales,3,8.108108108108109,cope with fast-paced situations,False
+Waiter,49e1eb78-e6b1-4116-8e9f-f23316ee503e,Wales,3,8.108108108108109,remain calm in stressful situations,False

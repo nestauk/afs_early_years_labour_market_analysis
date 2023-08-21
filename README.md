@@ -14,7 +14,6 @@ To **analyse** enriched, filtered data, refer to the notebook in `notebooks/`.
   - Setup the conda environment
   - Configure `pre-commit`
 - Download spacy model: `python -m spacy download en_core_web_sm`
-- `conda install geopandas`
 
 ## Contributor guidelines
 

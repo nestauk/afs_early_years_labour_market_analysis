@@ -1,8 +1,12 @@
 # Data Enrichment
 
-This folder contains the scripts used to enrich the OJO data used in the analysis.
+This folder contains the scripts used to enrich,clean and filter the OJO data used in the OJO analysis and streamlit app. The scripts are as follows:
 
-## Enrichment Steps
+1. `enrich_relevant_jobs.py`
+2. `clean_relevant_jobs.py`
+3. `filter_relevant_jobs.py`
+
+## 1. `enrich_relevant_jobs.py`
 
 This script enriches OJO data by adding:
 
@@ -12,7 +16,7 @@ This script enriches OJO data by adding:
 - minimum early year practitioners qualification level;
 - location urban/rural classification;
 
-`enrich_relevant_jobs.py` - adds enrichment information. Also adds a dataset of skills extracted from the relevant job adverts. To run, execute the following command from this directory:
+It also adds a dataset of skills extracted from the relevant job adverts. To run, execute the following command from this directory:
 
 ```bash
 python enrich_relevant_jobs.py run
@@ -140,3 +144,25 @@ According to [this guidance on qualifications from the UK government](https://ww
 | 6                    | Qualified Teacher Status (QTS)                                                                                                                                                                                  |
 | 6                    | Early Years Teacher Status (EYTS)                                                                                                                                                                               |
 | 6                    | Early Years Professional Status (EYPS)                                                                                                                                                                          |
+
+## 2. `clean_relevant_jobs.py`
+
+This script cleans up the enriched OJO data by:
+
+- dropping sectors that are no longer relevant;
+- accomodating for inflation;
+- dropping duplicates;
+- dropping jobs that were created before April 2021;
+- cleans up skills data.
+
+```bash
+python clean_relevant_jobs.py
+```
+
+## 3. `filter_relevant_jobs.py`
+
+This script creates a series of summary tables saved to `analysis/data` for the purpose of generating streamlit graphs. You will need to run this script if you want to run the streamlit app or OJO analysis notebook.
+
+```bash
+python filter_relevant_jobs.py
+```

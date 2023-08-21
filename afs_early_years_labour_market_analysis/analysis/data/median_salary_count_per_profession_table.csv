@@ -1,0 +1,18 @@
+profession,nation,id,inflation_adj_min_salary,inflation_adj_max_salary
+Early Years Practitioner,England,28035,22629,25866
+Early Years Practitioner,Northern Ireland,9,16345,27241
+Early Years Practitioner,Scotland,83,23972,28727
+Early Years Practitioner,Wales,346,21406,24435
+Primary School Teacher,England,12617,31447,45330
+Primary School Teacher,Scotland,2,33997,45330
+Primary School Teacher,Wales,259,40148,44989
+Retail Assistant,England,3595,21895,23373
+Retail Assistant,Northern Ireland,24,20611,20611
+Retail Assistant,Scotland,386,21895,23373
+Retail Assistant,Wales,196,21460,23373
+Secondary School Teacher,England,2046,31200,45330
+Secondary School Teacher,Scotland,2,41080,46746
+Secondary School Teacher,Wales,108,40148,41953
+Waiter,England,2114,22974,25816
+Waiter,Scotland,65,21780,24396
+Waiter,Wales,37,21104,24417
